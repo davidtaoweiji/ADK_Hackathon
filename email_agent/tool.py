@@ -26,7 +26,8 @@ def get_gmail_service():
     return build('gmail', 'v1', credentials=creds)
 
 
-def fetch_lastest_emails(max_results=10, after=None, before=None) -> list:
+def fetch_lastest_emails(max_results: int, after: Optional[str] = None,
+    before: Optional[str] = None) -> list:
     """
     Fetches the most recent emails from the inbox using the Gmail API, optionally within a date range.
 
@@ -68,7 +69,7 @@ def fetch_lastest_emails(max_results=10, after=None, before=None) -> list:
     except HttpError as error:
         return f"An error occurred: {error}"
 
-def send_email(to, subject, body):
+def send_email(to:str, subject:str, body:str)-> dict:
     """
     Sends an email using the Gmail API.
 
@@ -93,12 +94,12 @@ def send_email(to, subject, body):
         return f"An error occurred: {error}"
 
 def search_emails(
-    max_results: int = 10,
+    max_results: int,
     keyword: Optional[str] = None,
     sender: Optional[str] = None,
     subject: Optional[str] = None,
-    after: Optional[datetime] = None,
-    before: Optional[datetime] = None
+    after: Optional[str] = None,
+    before: Optional[str] = None
 ) -> List[dict]:
     '''
     Search Gmail messages using the Gmail API with optional filters and return full email content.
@@ -157,8 +158,8 @@ def set_auto_reply(
     enable: bool,
     subject: str,
     message: str,
-    start_time: int = 0,
-    end_time: int = 0
+    start_time: int ,
+    end_time: int
 ):
     """
     Sets up or disale an automatic reply (vacation responder) in Gmail.
@@ -188,20 +189,19 @@ def set_auto_reply(
 
     return result
 
-def download_attachments(message_id: str, download_dir: str = "./attachments"):
+def download_attachments(message_id: str):
     """
     Downloads all attachments from a Gmail message.
 
     Parameters:
         message_id (str): The ID of the Gmail message to extract attachments from.
-        download_dir (str): Directory to save the attachments.
 
     Returns:
         List[str]: List of file paths to the downloaded attachments.
     """
     service = get_gmail_service()
     message = service.users().messages().get(userId='me', id=message_id).execute()
-
+    download_dir: str = "./attachments"
     if not os.path.exists(download_dir):
         os.makedirs(download_dir)
 
@@ -234,7 +234,7 @@ def reply_email(message_id: str, reply_text: str):
     Returns:
         dict: Metadata of the sent reply message.
     """
-    service = get_gmail_service
+    service = get_gmail_service()
 
     # Fetch the original message metadata
     original = service.users().messages().get(userId='me', id=message_id, format='metadata').execute()
@@ -260,11 +260,60 @@ def reply_email(message_id: str, reply_text: str):
     sent = service.users().messages().send(userId='me', body=reply).execute()
     return sent
 
+def mark_email(message_ids, read:Optional[str] = None, starred:Optional[str] = None):
+    """
+    Marks Gmail messages as read/unread or starred/unstarred.
+
+    This function modifies the labels of one or more Gmail messages to update their read or starred status.
+    You can use it to mark messages as read, unread, starred, or unstarred by specifying the appropriate flags.
+
+    Parameters:
+        message_ids (List[str]): A list of Gmail message IDs to modify.
+        read (bool, optional): 
+            - True to mark messages as read.
+            - False to mark messages as unread.
+            - None to leave read status unchanged.
+        starred (bool, optional): 
+            - True to add the "STARRED" label.
+            - False to remove the "STARRED" label.
+            - None to leave starred status unchanged.
+
+    Returns:
+        None
+    """
+
+    service = get_gmail_service
+    labels_to_add = []
+    labels_to_remove = []
+
+    if read is not None:
+        if read:
+            labels_to_remove.append("UNREAD")
+        else:
+            labels_to_add.append("UNREAD")
+
+    if starred is not None:
+        if starred:
+            labels_to_add.append("STARRED")
+        else:
+            labels_to_remove.append("STARRED")
+
+    for msg_id in message_ids:
+        service.users().messages().modify(
+            userId='me',
+            id=msg_id,
+            body={
+                'addLabelIds': labels_to_add,
+                'removeLabelIds': labels_to_remove
+            }
+        ).execute()
+
 
 if __name__ == "__main__":
     # temp = check_emails(max_results=20, after="2025/01/01", before="2025/02/01")
-    temp = search_emails(max_results=5, keyword="microsoft")
-    print(len(temp))
-    print(temp)
+    # temp = search_emails(max_results=2, keyword="attachment",sender="jtw1091367152@qq.com")
+    reply_email("1970b98ca4e3b4fa", "This is a test reply email.")
+    # print(len(temp))
+    # print(temp)
     # result = send_email("wenhaos@umich.edu", "Test Subject", "Hello from Gmail API!")
     # print(result)
