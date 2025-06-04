@@ -196,13 +196,6 @@ const initialCalendarEvents: CalendarEvent[] = [
     { id: 'cal5', time: '02:00 PM', title: 'Feature Planning Meeting' },
 ];
 
-const initialEmails: EmailItem[] = [
-    { id: 'mail1', sender: 'HR Department', subject: 'Important: Company Policy Update', snippet: 'Please review the updated company policies...' },
-    { id: 'mail2', sender: 'John Doe', subject: 'Project Alpha - Feedback', snippet: 'Here is my feedback on the latest designs...' },
-    { id: 'mail3', sender: 'Tech Weekly', subject: 'Your Weekly Tech Digest', snippet: 'Latest news in AI, Web Development, and more...' },
-];
-
-
 const App: React.FC = () => {
   const [chatHistory, setChatHistory] = useState<Message[]>([]);
   const [userInput, setUserInput] = useState<string>('');
@@ -211,7 +204,7 @@ const App: React.FC = () => {
   const [assistantVolume, setAssistantVolume] = useState<number>(0.7); 
 
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>(initialCalendarEvents);
-  const [emailItems, setEmailItems] = useState<EmailItem[]>(initialEmails);
+  const [emailItems, setEmailItems] = useState<EmailItem[]>([]);
   const [isCalendarLoading, setIsCalendarLoading] = useState<boolean>(false);
   const [isEmailLoading, setIsEmailLoading] = useState<boolean>(false);
 
@@ -230,6 +223,34 @@ const App: React.FC = () => {
       console.warn('Text-to-Speech API not supported in this browser.');
     }
   }, [assistantVolume]);
+
+  useEffect(() => {
+    const fetchInitialEmails = async () => {
+      setIsEmailLoading(true);
+      try {
+        const response = await fetch("http://127.0.0.1:8000/fetch_latest_emails");
+        const data = await response.json();
+        if (data && Array.isArray(data.emails)) {
+          const newEmails: EmailItem[] = data.emails.map((email: any, idx: number) => ({
+            id: email.id || `mail-api-${idx}-${Date.now()}`,
+            sender: email.from || email.sender || "Unknown Sender",
+            subject: email.subject || "No Subject",
+            snippet: email.snippet || "",
+          }));
+          setEmailItems(newEmails);
+        } else {
+          setEmailItems([]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch emails:", error);
+        setEmailItems([]);
+      }
+      setIsEmailLoading(false);
+    };
+
+    fetchInitialEmails();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const welcomeMessageText = "Hello! I'm your AI assistant. How can I help you today? You can toggle my audio response using the switch in the top-left corner.";
@@ -401,98 +422,34 @@ const App: React.FC = () => {
     }, 1500);
   };
 
-  const handleRefreshEmail = () => {
+  const handleRefreshEmail = async () => {
     setIsEmailLoading(true);
-    setTimeout(() => {
-        const newEmail: EmailItem = {
-            id: `mail-new-${Date.now()}`,
-            sender: 'Refreshed Sender',
-            subject: 'New Email Arrived!',
-            snippet: `This email was fetched at ${new Date().toLocaleTimeString()}.`
-        };
-        // Simulate new data
-        setEmailItems(prevEmails => [newEmail, ...prevEmails.slice(0, 3)]);
-        setIsEmailLoading(false);
-    }, 1500);
+    try {
+        const response = await fetch("http://127.0.0.1:8000/fetch_latest_emails");
+        const data = await response.json();
+        if (data && Array.isArray(data.emails)) {
+            // Map backend dicts to EmailItem type if needed
+            const newEmails: EmailItem[] = data.emails.map((email: any, idx: number) => ({
+                id: email.id || `mail-api-${idx}-${Date.now()}`,
+                sender: email.from || email.sender || "Unknown Sender",
+                subject: email.subject || "No Subject",
+                snippet: email.snippet || "",
+            }));
+            setEmailItems(newEmails);
+        } else {
+            setEmailItems([]);
+        }
+    } catch (error) {
+        console.error("Failed to fetch emails:", error);
+        setEmailItems([]);
+    }
+    setIsEmailLoading(false);
   };
 
 
   return (
     <div className="app-container" role="main">
-      <section className="chat-panel" aria-label="Chat Panel">
-        <div className="chat-panel-header">
-            <button
-                onClick={toggleAssistantAudio}
-                className={`audio-toggle-switch ${assistantVolume > 0 ? 'on' : 'off'}`}
-                aria-pressed={assistantVolume > 0}
-                aria-label={assistantVolume > 0 ? "Mute assistant audio" : "Unmute assistant audio"}
-                title={assistantVolume > 0 ? "Mute assistant audio" : "Unmute assistant audio"}
-            >
-                <span className="audio-toggle-label">Assistant Audio:</span>
-                <span className="audio-toggle-icon" aria-hidden="true">
-                    {assistantVolume > 0 ? (
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18px" height="18px">
-                          <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
-                        </svg>
-                    ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18px" height="18px">
-                          <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L7 9H3v6h4l5 5V4z"/>
-                        </svg>
-                    )}
-                </span>
-                <div className="switch-track">
-                    <div className="switch-knob"></div>
-                </div>
-            </button>
-        </div>
-        <div className="chat-history" ref={chatHistoryRef} aria-live="polite">
-          {chatHistory.map((msg) => (
-            <div
-              key={msg.id}
-              className={`chat-message ${msg.sender === 'user' ? 'user-message' : 'bot-message'} ${msg.isLoading ? 'loading' : ''}`}
-              aria-label={`${msg.sender === 'user' ? 'User' : 'Bot'} message: ${msg.isLoading ? msg.text + ' loading' : msg.text }`}
-            >
-              {renderMessageContent(msg)}
-            </div>
-          ))}
-        </div>
-        <div className="chat-input-area">
-          <button
-            onClick={toggleListening}
-            className={`mic-button ${isListening ? 'listening' : ''}`}
-            aria-pressed={isListening}
-            aria-label={isListening ? 'Stop voice input' : 'Start voice input'}
-            title={isListening ? 'Stop voice input' : 'Start voice input'}
-            disabled={!speechRecognitionRef.current || isBotThinking}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.91-3c-.49 0-.9.36-.98.85C16.52 14.24 14.47 16 12 16s-4.52-1.76-4.93-4.15c-.08-.49-.49-.85-.98-.85-.55 0-1 .45-1 1 0 2.73 2.04 4.98 4.75 5.42V21H9.75c-.41 0-.75.34-.75.75s.34.75.75.75h4.5c.41 0 .75-.34.75-.75s-.34-.75-.75-.75H13v-1.58c2.71-.44 4.75-2.69 4.75-5.42 0-.55-.45-1-1-1z"/> M9 5c0-1.66 1.34-3 3-3s3 1.34 3 5v6c0 1.66-1.34 3-3 3s-3-1.34-3-5V5z"/>
-            </svg>
-          </button>
-          <input
-            type="text"
-            value={userInput}
-            onChange={handleInputChange}
-            onKeyPress={handleInputKeyPress}
-            placeholder={isListening ? "Listening..." : "Type or use mic..."}
-            aria-label="Chat input"
-            disabled={isListening || isBotThinking}
-          />
-          <button
-            onClick={() => handleSendMessage()}
-            className="send-button"
-            disabled={!userInput.trim() || isBotThinking }
-            aria-label="Send message"
-            title="Send message"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24px" height="24px">
-              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-            </svg>
-          </button>
-        </div>
-      </section>
-
-      <aside className="dashboard-panel" aria-label="Information Dashboard">
+           <aside className="dashboard-panel" aria-label="Information Dashboard">
         <div className="dashboard-content">
             <div className="dashboard-column">
                 <div className="widget fixed-height" role="region" aria-labelledby="weather-widget-heading">
@@ -555,6 +512,78 @@ const App: React.FC = () => {
             </div>
         </div>
       </aside>
+      <section className="chat-panel" aria-label="Chat Panel">
+        <div className="chat-panel-header">
+            <button
+                onClick={toggleAssistantAudio}
+                className={`audio-toggle-switch ${assistantVolume > 0 ? 'on' : 'off'}`}
+                aria-pressed={assistantVolume > 0}
+                aria-label={assistantVolume > 0 ? "Mute assistant audio" : "Unmute assistant audio"}
+                title={assistantVolume > 0 ? "Mute assistant audio" : "Unmute assistant audio"}
+            >
+                <span className="audio-toggle-label">Assistant Audio:</span>
+                <span className="audio-toggle-icon" aria-hidden="true">
+                    {assistantVolume > 0 ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18px" height="18px">
+                          <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                        </svg>
+                    ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18px" height="18px">
+                          <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L7 9H3v6h4l5 5V4z"/>
+                        </svg>
+                    )}
+                </span>
+                <div className="switch-track">
+                    <div className="switch-knob"></div>
+                </div>
+            </button>
+        </div>
+        <div className="chat-history" ref={chatHistoryRef} aria-live="polite">
+          {chatHistory.map((msg) => (
+            <div
+              key={msg.id}
+              className={`chat-message ${msg.sender === 'user' ? 'user-message' : 'bot-message'} ${msg.isLoading ? 'loading' : ''}`}
+              aria-label={`${msg.sender === 'user' ? 'User' : 'Bot'} message: ${msg.isLoading ? msg.text + ' loading' : msg.text }`}
+            >
+              {renderMessageContent(msg)}
+            </div>
+          ))}
+        </div>
+        <div className="chat-input-area">
+          <button
+            onClick={toggleListening}
+            className={`mic-button ${isListening ? 'listening' : ''}`}
+            aria-pressed={isListening}
+            aria-label={isListening ? 'Stop voice input' : 'Start voice input'}
+            title={isListening ? 'Stop voice input' : 'Start voice input'}
+            disabled={!speechRecognitionRef.current || isBotThinking}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.91-3c-.49 0-.9.36-.98.85C16.52 14.24 14.47 16 12 16s-4.52-1.76-4.93-4.15c-.08-.49-.49-.85-.98-.85-.55 0-1 .45-1 1 0 2.73 2.04 4.98 4.75 5.42V21H9.75c-.41 0-.75.34-.75.75s.34.75.75.75h4.5c.41 0 .75-.34.75-.75s-.34-.75-.75-.75H13v-1.58c2.71-.44 4.75-2.69 4.75-5.42 0-.55-.45-1-1-1z"/>
+            </svg>
+          </button>
+          <input
+            type="text"
+            value={userInput}
+            onChange={handleInputChange}
+            onKeyPress={handleInputKeyPress}
+            placeholder={isListening ? "Listening..." : "Type or use mic..."}
+            aria-label="Chat input"
+            disabled={isListening || isBotThinking}
+          />
+          <button
+            onClick={() => handleSendMessage()}
+            className="send-button"
+            disabled={!userInput.trim() || isBotThinking }
+            aria-label="Send message"
+            title="Send message"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24px" height="24px">
+              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+            </svg>
+          </button>
+        </div>
+      </section>
     </div>
   );
 };
