@@ -21,10 +21,6 @@
       --border-radius-md: 8px;
       --border-radius-lg: 12px;
       --border-radius-pill: 20px;
-      --control-height: 44px; /* Standard height for input area controls */
-      --switch-off-bg: #bdc1c6;
-      --switch-on-bg: var(--primary-blue);
-      --switch-knob-bg: #ffffff;
     }
 
     body {
@@ -60,113 +56,110 @@
     }
 
     .chat-panel {
-      flex: 0 0 50%; /* Adjusted width */
+      flex: 0 0 50%;
       display: flex;
       flex-direction: column;
       border-right: 1px solid var(--panel-border-color);
       background-color: var(--container-bg-color);
     }
-    
+
     .chat-panel-header {
       display: flex;
-      justify-content: flex-end; 
       align-items: center;
-      padding: 8px 15px;
+      padding: 10px 15px;
       border-bottom: 1px solid var(--panel-border-color);
-      background-color: var(--container-bg-color); 
+      background-color: var(--input-area-bg); /* Consistent with input area */
       flex-shrink: 0;
-      height: 50px; /* Give header a bit of defined space */
-      box-sizing: border-box;
     }
 
-    .audio-control-switch-container {
+    .audio-toggle-switch {
       display: flex;
       align-items: center;
-      background-color: transparent;
-      border: 1px solid transparent; /* for focus outline offset */
-      border-radius: var(--border-radius-pill);
-      padding: 6px 12px;
       cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
-    .audio-control-switch-container:hover {
-      background-color: rgba(0,0,0,0.04);
-    }
-    .audio-control-switch-container:focus-visible {
-      outline: 2px solid var(--primary-blue);
-      outline-offset: 1px;
-      border-color: var(--primary-blue);
+      background-color: transparent;
+      border: 1px solid var(--panel-border-color);
+      padding: 6px 12px;
+      border-radius: var(--border-radius-pill);
+      font-size: 0.9rem;
+      color: var(--secondary-text-color);
+      transition: background-color 0.2s, border-color 0.2s;
     }
 
-    .audio-control-icon {
-        font-size: 1.2rem;
-        margin-right: 8px;
-        color: var(--secondary-text-color);
-    }
-    
-    .audio-control-label {
-        font-size: 0.9rem;
-        color: var(--secondary-text-color);
-        margin-right: 10px;
-        user-select: none; /* Prevent text selection on click */
+    .audio-toggle-switch:hover {
+      background-color: rgba(0,0,0,0.03);
+      border-color: var(--secondary-text-color);
     }
 
-    .audio-switch-track {
-        width: 40px;
-        height: 20px;
-        border-radius: 10px;
-        position: relative;
-        transition: background-color 0.2s ease-in-out;
-        cursor: pointer;
-    }
-    .audio-switch-track.on {
-        background-color: var(--switch-on-bg);
-    }
-    .audio-switch-track.off {
-        background-color: var(--switch-off-bg);
+    .audio-toggle-label {
+      margin-right: 8px;
+      user-select: none; /* Prevent text selection on click */
     }
 
-    .audio-switch-knob {
-        width: 16px;
-        height: 16px;
-        background-color: var(--switch-knob-bg);
-        border-radius: 50%;
-        position: absolute;
-        top: 2px;
-        left: 2px;
-        transition: transform 0.2s ease-in-out;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    .audio-toggle-icon {
+      font-size: 1.1rem;
+      margin-right: 8px;
+      color: var(--primary-blue);
+      user-select: none;
     }
-    .audio-switch-track.on .audio-switch-knob {
-        transform: translateX(20px);
+    .audio-toggle-icon svg { /* Ensure SVGs also get the blue color */
+        fill: var(--primary-blue);
     }
-     .audio-switch-track.off .audio-switch-knob {
-        transform: translateX(0px);
+
+
+    .audio-toggle-switch .switch-track {
+      width: 36px;
+      height: 18px;
+      background-color: #bdc1c6; /* Off color */
+      border-radius: 9px;
+      position: relative;
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+
+    .audio-toggle-switch.on .switch-track {
+      background-color: var(--primary-blue); /* On color */
+    }
+
+    .audio-toggle-switch .switch-knob {
+      width: 14px;
+      height: 14px;
+      background-color: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: transform 0.3s ease;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+      user-select: none;
+    }
+
+    .audio-toggle-switch.on .switch-knob {
+      transform: translateX(18px);
     }
 
 
     .dashboard-panel {
-      flex: 0 0 50%; /* Adjusted width */
+      flex: 0 0 50%;
       background-color: #f8f9fa;
       display: flex;
       flex-direction: column;
-      overflow: hidden; 
+      overflow: hidden;
     }
-    
+
     .dashboard-content {
       padding: 20px;
-      display: flex; 
-      gap: 20px; 
-      flex-grow: 1; 
-      overflow: hidden; 
+      display: flex;
+      gap: 20px;
+      flex-grow: 1;
+      overflow: hidden;
     }
 
     .dashboard-column {
-      flex: 1; 
+      flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 20px; 
-      overflow: hidden; 
+      gap: 20px;
+      overflow: hidden;
     }
 
     .widget {
@@ -175,41 +168,88 @@
       border-radius: var(--border-radius-md);
       border: 1px solid var(--panel-border-color);
       box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-      display: flex; 
-      flex-direction: column; 
+      display: flex;
+      flex-direction: column;
     }
-    
-    .widget.fixed-height { 
+
+    .widget.fixed-height {
       flex-shrink: 0;
     }
 
-    .widget.grow-widget { 
+    .widget.grow-widget {
       flex-grow: 1;
-      min-height: 150px; 
-      overflow: hidden; 
+      min-height: 150px;
+      overflow: hidden;
+    }
+
+    .widget-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px; /* Matches h3 margin-bottom */
     }
 
     .widget h3 {
       margin-top: 0;
-      margin-bottom: 12px;
+      margin-bottom: 0; /* Adjusted as margin is on widget-header now */
       color: var(--primary-blue);
       font-size: 1.15rem;
       font-weight: 500;
       display: flex;
       align-items: center;
-      flex-shrink: 0; 
+      flex-shrink: 0;
     }
     .widget h3 .widget-icon {
       margin-right: 8px;
       font-size: 1.2em;
     }
-    .widget > p { 
+    .widget > p {
       font-size: 0.95rem;
       color: var(--secondary-text-color);
       line-height: 1.5;
       flex-shrink: 0;
     }
     
+    .widget-refresh-button {
+      background: none;
+      border: none;
+      padding: 4px;
+      cursor: pointer;
+      color: var(--secondary-text-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.2s;
+    }
+    .widget-refresh-button:hover:not(:disabled) {
+      background-color: rgba(0,0,0,0.05);
+    }
+    .widget-refresh-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+    .widget-refresh-button svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+    .widget-refresh-button svg.spinning {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .widget-loading-text {
+        font-size: 0.85em;
+        color: var(--secondary-text-color);
+        text-align: center;
+        padding: 10px 0;
+    }
+
     .calendar-list-description, .email-list-description {
       font-size: 0.85em;
       color: var(--secondary-text-color);
@@ -217,14 +257,14 @@
       flex-shrink: 0;
     }
 
-    .list-content-wrapper { 
+    .list-content-wrapper {
       flex-grow: 1;
       overflow-y: auto;
-      padding-right: 5px; 
+      padding-right: 5px;
     }
-    
+
     .calendar-event-item, .email-item {
-      padding: 10px 5px 10px 0; 
+      padding: 10px 5px 10px 0;
       border-bottom: 1px solid #eee;
       font-size: 0.9rem;
       line-height: 1.4;
@@ -236,6 +276,7 @@
         color: var(--primary-text-color);
         margin-right: 8px;
     }
+
 
     .chat-history {
       flex-grow: 1;
@@ -274,7 +315,7 @@
       font-style: italic;
       color: var(--secondary-text-color);
     }
-    
+
     .loading-ellipsis span {
       animation: blink 1.4s infinite both;
     }
@@ -289,15 +330,15 @@
       40% { opacity: 1; }
     }
 
+
     .chat-input-area {
       display: flex;
       align-items: center;
-      padding: 10px 15px;
+      padding: 12px 15px;
       border-top: 1px solid var(--panel-border-color);
       background-color: var(--input-area-bg);
       gap: 10px;
-      flex-shrink: 0; 
-      min-height: var(--control-height);
+      flex-shrink: 0;
     }
 
     .chat-input-area input[type="text"] {
@@ -308,8 +349,6 @@
       font-size: 1rem;
       background-color: var(--container-bg-color);
       color: var(--primary-text-color);
-      height: var(--control-height);
-      box-sizing: border-box;
     }
 
     .chat-input-area input[type="text"]:focus {
@@ -321,71 +360,52 @@
       color: #9aa0a6;
     }
 
-    .chat-input-area button { 
-      background: transparent;
+
+    .chat-input-area button {
       border: none;
-      border-radius: 50%; 
+      border-radius: 50%;
       cursor: pointer;
-      width: var(--control-height);
-      height: var(--control-height);
+      width: 44px;
+      height: 44px;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background-color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+      transition: background-color 0.2s ease, box-shadow 0.2s ease;
       flex-shrink: 0;
-      padding:0;
-      box-sizing: border-box;
     }
-     .chat-input-area button:disabled {
-      opacity: 0.5; 
+    .chat-input-area button:hover {
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .chat-input-area button:disabled {
+      opacity: 0.6;
       cursor: not-allowed;
-      background-color: #ccc !important; 
     }
-    .chat-input-area button:disabled svg {
-        fill: #777 !important; 
-    }
-    
-    /* .mic-button:not(.listening):not(:disabled) { 
-       background-color: var(--mic-ready-bg);
-    }
-    .mic-button.listening:not(:disabled) { 
-      background-color: var(--mic-listening-bg);
-    }
-     .mic-button:not(.listening):hover:not(:disabled) {
-        background-color: #2e8a49; 
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-     }
-    .mic-button.listening:hover:not(:disabled) {
-        background-color: #c5372c; 
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    } */
 
-    .mic-button  {
+    .mic-button {
       background-color: var(--mic-ready-bg);
       color: var(--button-text-color);
     }
-    .mic-button svg {
-      width: 22px; 
-      height: 22px;
-    }
-    .mic-button.listening { 
+    .mic-button.listening {
       background-color: var(--mic-listening-bg);
     }
-
-    .send-button:not(:disabled) {
-      background-color: var(--primary-blue);
+    .mic-button svg {
+      width: 22px;
+      height: 22px;
+      fill: var(--button-text-color); /* Ensure mic icon is white */
     }
-    .send-button:hover:not(:disabled) {
-       background-color: #1368d4; 
-       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+
+    .send-button {
+      background-color: var(--primary-blue);
+      color: var(--button-text-color);
     }
     .send-button svg {
-      width: 20px; 
-      height: 20px; 
-      fill: var(--button-text-color); 
+      width: 20px;
+      height: 20px;
+      fill: var(--button-text-color);
     }
-    
-    .sr-only { 
+
+
+    .sr-only {
       position: absolute;
       width: 1px;
       height: 1px;
@@ -431,3 +451,4 @@
   <script type="module" src="/index.tsx"></script>
 </body>
 </html>
+

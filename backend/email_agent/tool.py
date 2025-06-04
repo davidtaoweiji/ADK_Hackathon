@@ -4,6 +4,7 @@ from email.mime.text import MIMEText
 from datetime import datetime
 from typing import Optional, List
 from common.tool_utils import get_google_service
+import os
 
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly', 'https://www.googleapis.com/auth/gmail.send']
 

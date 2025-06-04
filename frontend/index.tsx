@@ -60,8 +60,8 @@ declare var webkitSpeechRecognition: { // For Safari/Chrome legacy
 interface SpeechRecognitionEvent extends Event {
     readonly resultIndex: number;
     readonly results: SpeechRecognitionResultList;
-    readonly interpretation?: any; 
-    readonly emma?: Document | null; 
+    readonly interpretation?: any;
+    readonly emma?: Document | null;
 }
 
 interface SpeechRecognitionResultList {
@@ -83,8 +83,8 @@ interface SpeechRecognitionAlternative {
 }
 
 interface SpeechRecognitionErrorEvent extends Event {
-    readonly error: string; 
-    readonly message: string; 
+    readonly error: string;
+    readonly message: string;
 }
 
 interface SpeechGrammar {
@@ -155,8 +155,8 @@ interface SpeechSynthesisEvent extends Event {
     readonly name: string;
 }
 
-interface SpeechSynthesisErrorEvent extends Event { // Renamed from SpeechSynthesisErrorEvent to avoid conflict if globally defined
-    readonly error: string; 
+interface SpeechSynthesisErrorEvent extends Event {
+    readonly error: string;
 }
 
 declare global {
@@ -175,56 +175,72 @@ interface Message {
   isLoading?: boolean;
 }
 
-const DEFAULT_VOLUME = 0.7;
+interface CalendarEvent {
+  id: string;
+  time: string;
+  title: string;
+}
+
+interface EmailItem {
+  id: string;
+  sender: string;
+  subject: string;
+  snippet: string;
+}
+
+const initialCalendarEvents: CalendarEvent[] = [
+    { id: 'cal1', time: '09:00 AM', title: 'Daily Stand-up' },
+    { id: 'cal2', time: '10:00 AM', title: 'Client Onboarding Call' },
+    { id: 'cal3', time: '11:30 AM', title: 'Design Review Session' },
+    { id: 'cal4', time: '01:00 PM', title: 'Lunch Break' },
+    { id: 'cal5', time: '02:00 PM', title: 'Feature Planning Meeting' },
+];
+
+const initialEmails: EmailItem[] = [
+    { id: 'mail1', sender: 'HR Department', subject: 'Important: Company Policy Update', snippet: 'Please review the updated company policies...' },
+    { id: 'mail2', sender: 'John Doe', subject: 'Project Alpha - Feedback', snippet: 'Here is my feedback on the latest designs...' },
+    { id: 'mail3', sender: 'Tech Weekly', subject: 'Your Weekly Tech Digest', snippet: 'Latest news in AI, Web Development, and more...' },
+];
+
 
 const App: React.FC = () => {
   const [chatHistory, setChatHistory] = useState<Message[]>([]);
   const [userInput, setUserInput] = useState<string>('');
   const [isListening, setIsListening] = useState<boolean>(false);
   const [isBotThinking, setIsBotThinking] = useState<boolean>(false);
-  const [assistantVolume, setAssistantVolume] = useState<number>(DEFAULT_VOLUME);
-  
+  const [assistantVolume, setAssistantVolume] = useState<number>(0.7); 
+
+  const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>(initialCalendarEvents);
+  const [emailItems, setEmailItems] = useState<EmailItem[]>(initialEmails);
+  const [isCalendarLoading, setIsCalendarLoading] = useState<boolean>(false);
+  const [isEmailLoading, setIsEmailLoading] = useState<boolean>(false);
+
   const speechRecognitionRef = useRef<SpeechRecognition | null>(null);
   const chatHistoryRef = useRef<HTMLDivElement>(null);
-  const speechSynthesisSupported = useRef(false);
-  const previousVolumeRef = useRef<number>(DEFAULT_VOLUME);
-
-
-  useEffect(() => {
-    speechSynthesisSupported.current = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
-  }, []);
 
   const speakText = useCallback((text: string) => {
-    if (!speechSynthesisSupported.current || assistantVolume === 0) {
-      console.log('Speech synthesis skipped (not supported, volume is 0, or no text).');
-      return;
+    if (assistantVolume > 0 && 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window) {
+      const utterance = new window.SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      utterance.volume = assistantVolume;
+      window.speechSynthesis.speak(utterance);
+    } else if (assistantVolume === 0) {
+        console.log("Assistant audio is muted.");
+    } else {
+      console.warn('Text-to-Speech API not supported in this browser.');
     }
-    window.speechSynthesis.cancel(); 
-    const utterance = new window.SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';
-    utterance.volume = assistantVolume;
-    window.speechSynthesis.speak(utterance);
   }, [assistantVolume]);
 
   useEffect(() => {
-    const welcomeMessageText = "Hi! I'm your AI assistant. My responses are read aloud by default. You can toggle my voice using the audio switch at the top.";
-    const welcomeMessage: Message = {
-      id: `bot-welcome-${Date.now()}`,
-      text: welcomeMessageText,
-      sender: 'bot',
+    const welcomeMessageText = "Hello! I'm your AI assistant. How can I help you today? You can toggle my audio response using the switch in the top-left corner.";
+    const initialBotMessage: Message = {
+        id: `bot-initial-${Date.now()}`,
+        text: welcomeMessageText,
+        sender: 'bot'
     };
-    setChatHistory([welcomeMessage]);
-    
-    if (speechSynthesisSupported.current && assistantVolume > 0) {
-        // Small delay to ensure the message is in the DOM and the user is ready.
-        setTimeout(() => {
-            const utterance = new window.SpeechSynthesisUtterance(welcomeMessageText);
-            utterance.lang = 'en-US';
-            utterance.volume = assistantVolume; 
-            window.speechSynthesis.speak(utterance);
-        }, 100);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    setChatHistory([initialBotMessage]);
+    speakText(welcomeMessageText);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); 
 
   useEffect(() => {
@@ -234,9 +250,9 @@ const App: React.FC = () => {
         speechRecognitionRef.current = new SpeechRecognitionAPI();
       }
       const recognitionInstance = speechRecognitionRef.current;
-      
+
       recognitionInstance.continuous = false;
-      recognitionInstance.interimResults = true; 
+      recognitionInstance.interimResults = true;
       recognitionInstance.lang = 'en-US';
 
       recognitionInstance.onresult = (event: SpeechRecognitionEvent) => {
@@ -249,16 +265,16 @@ const App: React.FC = () => {
             interimTranscript += event.results[i][0].transcript;
           }
         }
-        setUserInput(finalTranscript || interimTranscript); 
+        setUserInput(finalTranscript || interimTranscript);
       };
 
       recognitionInstance.onerror = (event: SpeechRecognitionErrorEvent) => {
         console.error('Speech recognition error:', event.error, event.message);
         setIsListening(false);
       };
-      
+
       recognitionInstance.onend = () => {
-        setIsListening(false); 
+        setIsListening(false);
       };
 
     } else {
@@ -269,9 +285,12 @@ const App: React.FC = () => {
             speechRecognitionRef.current.onresult = null;
             speechRecognitionRef.current.onerror = null;
             speechRecognitionRef.current.onend = null;
+            if (isListening) {
+                 speechRecognitionRef.current.stop();
+            }
         }
     };
-  }, []);
+  }, [isListening]);
 
   useEffect(() => {
     if (chatHistoryRef.current) {
@@ -282,12 +301,12 @@ const App: React.FC = () => {
   const startListening = () => {
     if (speechRecognitionRef.current && !isListening) {
       try {
-        setUserInput(''); 
+        setUserInput('');
         speechRecognitionRef.current.start();
         setIsListening(true);
       } catch (e) {
         console.error("Error starting speech recognition:", e);
-        setIsListening(false); 
+        setIsListening(false);
       }
     }
   };
@@ -295,6 +314,7 @@ const App: React.FC = () => {
   const stopListening = () => {
     if (speechRecognitionRef.current && isListening) {
       speechRecognitionRef.current.stop();
+      setIsListening(false);
     }
   };
 
@@ -305,7 +325,11 @@ const App: React.FC = () => {
       startListening();
     }
   };
-  
+
+  const toggleAssistantAudio = () => {
+    setAssistantVolume(prevVolume => prevVolume > 0 ? 0 : 0.7);
+  };
+
   const handleSendMessage = async (messageText?: string) => {
     const textToSend = (messageText || userInput).trim();
     if (!textToSend) return;
@@ -318,20 +342,21 @@ const App: React.FC = () => {
     setChatHistory(prev => [...prev, newUserMessage]);
     setUserInput('');
     setIsBotThinking(true);
-    
+
     const loadingBotMessageId = `bot-loading-${Date.now()}`;
-    const loadingBotMessage: Message = { 
-        id: loadingBotMessageId, 
-        text: 'Thinking', 
+    const loadingBotMessage: Message = {
+        id: loadingBotMessageId,
+        text: 'Thinking',
         sender: 'bot',
-        isLoading: true 
+        isLoading: true
     };
     setChatHistory(prev => [...prev, loadingBotMessage]);
 
+    // Simulate API call
     setTimeout(() => {
-      const botResponseText = `You said: "${textToSend}"`;
+      const botResponseText = `You said: "${textToSend}"`; // Mocked response
       const newBotMessage: Message = { id: `bot-${Date.now()}`, text: botResponseText, sender: 'bot' };
-      
+
       setChatHistory(prev => prev.map(msg => msg.id === loadingBotMessageId ? newBotMessage : msg ));
       speakText(botResponseText);
       setIsBotThinking(false);
@@ -362,62 +387,63 @@ const App: React.FC = () => {
     return message.text;
   };
 
-  const toggleMute = () => {
-    if (assistantVolume > 0) {
-      previousVolumeRef.current = assistantVolume; 
-      setAssistantVolume(0);
-    } else {
-      setAssistantVolume(previousVolumeRef.current > 0 ? previousVolumeRef.current : DEFAULT_VOLUME);
-    }
+  const handleRefreshCalendar = () => {
+    setIsCalendarLoading(true);
+    setTimeout(() => {
+        const newEvent: CalendarEvent = {
+            id: `cal-new-${Date.now()}`,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            title: 'Freshly Updated Event'
+        };
+        // Simulate new data, e.g., add to top and take last 5
+        setCalendarEvents(prevEvents => [newEvent, ...prevEvents.slice(0, 4)]);
+        setIsCalendarLoading(false);
+    }, 1500);
   };
 
-  const getVolumeIcon = () => {
-    return assistantVolume === 0 ? '🔇' : '🔊';
+  const handleRefreshEmail = () => {
+    setIsEmailLoading(true);
+    setTimeout(() => {
+        const newEmail: EmailItem = {
+            id: `mail-new-${Date.now()}`,
+            sender: 'Refreshed Sender',
+            subject: 'New Email Arrived!',
+            snippet: `This email was fetched at ${new Date().toLocaleTimeString()}.`
+        };
+        // Simulate new data
+        setEmailItems(prevEmails => [newEmail, ...prevEmails.slice(0, 3)]);
+        setIsEmailLoading(false);
+    }, 1500);
   };
 
-  const mockCalendarEvents = [
-    { id: 'cal1', time: '09:00 AM', title: 'Daily Stand-up' },
-    { id: 'cal2', time: '10:00 AM', title: 'Client Onboarding Call' },
-    { id: 'cal3', time: '11:30 AM', title: 'Design Review Session' },
-    { id: 'cal4', time: '01:00 PM', title: 'Lunch Break' },
-    { id: 'cal5', time: '02:00 PM', title: 'Feature Planning Meeting' },
-    { id: 'cal6', time: '03:30 PM', title: 'Code Refactoring Session' },
-    { id: 'cal7', time: '05:00 PM', title: 'End of Day Sync' },
-    { id: 'cal8', time: '06:00 PM', title: 'Gym Session' },
-  ];
-
-  const mockEmails = [
-    { id: 'mail1', sender: 'HR Department', subject: 'Important: Company Policy Update', snippet: 'Please review the updated company policies...' },
-    { id: 'mail2', sender: 'John Doe', subject: 'Project Alpha - Feedback', snippet: 'Here is my feedback on the latest designs...' },
-    { id: 'mail3', sender: 'Tech Weekly', subject: 'Your Weekly Tech Digest', snippet: 'Latest news in AI, Web Development, and more...' },
-    { id: 'mail4', sender: 'Support Team', subject: 'Re: Your recent inquiry', snippet: 'We have an update regarding your ticket...' },
-    { id: 'mail5', sender: 'Marketing Team', subject: 'Upcoming Webinar Announcement', snippet: 'Join us for an exciting webinar next week...' },
-    { id: 'mail6', sender: 'Cloud Services', subject: 'Your monthly invoice is ready', snippet: 'Please find your latest invoice attached...' },
-    { id: 'mail7', sender: 'Jane Smith', subject: 'Quick Question', snippet: 'Could we chat for a few minutes today?' },
-  ];
-  
-  const isAudioOn = assistantVolume > 0;
 
   return (
     <div className="app-container" role="main">
-      <section className="chat-panel" aria-labelledby="chat-panel-heading">
+      <section className="chat-panel" aria-label="Chat Panel">
         <div className="chat-panel-header">
-            <h2 id="chat-panel-heading" className="sr-only">Chat with AI Assistant</h2>
-            {speechSynthesisSupported.current && (
-                <button
-                    className="audio-control-switch-container"
-                    onClick={toggleMute}
-                    title={isAudioOn ? "Turn off assistant audio" : "Turn on assistant audio"}
-                    aria-label={isAudioOn ? "Turn off assistant audio" : "Turn on assistant audio"}
-                    aria-pressed={isAudioOn}
-                >
-                    <span className="audio-control-icon" aria-hidden="true">{getVolumeIcon()}</span>
-                    <span className="audio-control-label">Assistant Audio</span>
-                    <div className={`audio-switch-track ${isAudioOn ? 'on' : 'off'}`}>
-                        <div className="audio-switch-knob"></div>
-                    </div>
-                </button>
-            )}
+            <button
+                onClick={toggleAssistantAudio}
+                className={`audio-toggle-switch ${assistantVolume > 0 ? 'on' : 'off'}`}
+                aria-pressed={assistantVolume > 0}
+                aria-label={assistantVolume > 0 ? "Mute assistant audio" : "Unmute assistant audio"}
+                title={assistantVolume > 0 ? "Mute assistant audio" : "Unmute assistant audio"}
+            >
+                <span className="audio-toggle-label">Assistant Audio:</span>
+                <span className="audio-toggle-icon" aria-hidden="true">
+                    {assistantVolume > 0 ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18px" height="18px">
+                          <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                        </svg>
+                    ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18px" height="18px">
+                          <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L7 9H3v6h4l5 5V4z"/>
+                        </svg>
+                    )}
+                </span>
+                <div className="switch-track">
+                    <div className="switch-knob"></div>
+                </div>
+            </button>
         </div>
         <div className="chat-history" ref={chatHistoryRef} aria-live="polite">
           {chatHistory.map((msg) => (
@@ -431,16 +457,16 @@ const App: React.FC = () => {
           ))}
         </div>
         <div className="chat-input-area">
-          <button 
-            onClick={toggleListening} 
+          <button
+            onClick={toggleListening}
             className={`mic-button ${isListening ? 'listening' : ''}`}
             aria-pressed={isListening}
             aria-label={isListening ? 'Stop voice input' : 'Start voice input'}
             title={isListening ? 'Stop voice input' : 'Start voice input'}
             disabled={!speechRecognitionRef.current || isBotThinking}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22px" height="22px">
-              <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.91-3c-.49 0-.9.36-.98.85C16.52 14.24 14.47 16 12 16s-4.52-1.76-4.93-4.15c-.08-.49-.49-.85-.98-.85-.55 0-1 .45-1 1 0 2.73 2.04 4.98 4.75 5.42V21H9.75c-.41 0-.75.34-.75.75s.34.75.75.75h4.5c.41 0 .75-.34.75-.75s-.34-.75-.75-.75H13v-1.58c2.71-.44 4.75-2.69 4.75-5.42 0-.55-.45-1-1-1z M9 5c0-1.66 1.34-3 3-3s3 1.34 3 5v6c0 1.66-1.34 3-3 3s-3-1.34-3-5V5z"/>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.91-3c-.49 0-.9.36-.98.85C16.52 14.24 14.47 16 12 16s-4.52-1.76-4.93-4.15c-.08-.49-.49-.85-.98-.85-.55 0-1 .45-1 1 0 2.73 2.04 4.98 4.75 5.42V21H9.75c-.41 0-.75.34-.75.75s.34.75.75.75h4.5c.41 0 .75-.34.75-.75s-.34-.75-.75-.75H13v-1.58c2.71-.44 4.75-2.69 4.75-5.42 0-.55-.45-1-1-1z"/> M9 5c0-1.66 1.34-3 3-3s3 1.34 3 5v6c0 1.66-1.34 3-3 3s-3-1.34-3-5V5z"/>
             </svg>
           </button>
           <input
@@ -452,21 +478,21 @@ const App: React.FC = () => {
             aria-label="Chat input"
             disabled={isListening || isBotThinking}
           />
-          <button 
-            onClick={() => handleSendMessage()} 
+          <button
+            onClick={() => handleSendMessage()}
             className="send-button"
             disabled={!userInput.trim() || isBotThinking }
             aria-label="Send message"
             title="Send message"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20px" height="20px">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24px" height="24px">
               <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
             </svg>
           </button>
         </div>
       </section>
 
-      <aside className="dashboard-panel" aria-label="Information dashboard">
+      <aside className="dashboard-panel" aria-label="Information Dashboard">
         <div className="dashboard-content">
             <div className="dashboard-column">
                 <div className="widget fixed-height" role="region" aria-labelledby="weather-widget-heading">
@@ -474,28 +500,56 @@ const App: React.FC = () => {
                     <p>Current weather information will appear here.</p>
                 </div>
                 <div className="widget grow-widget" role="region" aria-labelledby="calendar-list-heading">
-                    <h3 id="calendar-list-heading"><span className="widget-icon" aria-hidden="true">🗓️</span>Calendar Events</h3>
+                    <div className="widget-header">
+                        <h3 id="calendar-list-heading"><span className="widget-icon" aria-hidden="true">🗓️</span>Calendar Events</h3>
+                        <button 
+                            className="widget-refresh-button" 
+                            onClick={handleRefreshCalendar} 
+                            disabled={isCalendarLoading}
+                            aria-label="Refresh calendar events"
+                            title="Refresh calendar events"
+                        >
+                            <svg className={isCalendarLoading ? 'spinning' : ''} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18px" height="18px">
+                                <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                            </svg>
+                        </button>
+                    </div>
                     <p className="calendar-list-description">Your upcoming schedule. Scroll to see more.</p>
                     <div className="list-content-wrapper" aria-label="List of calendar events">
-                        {mockCalendarEvents.map(event => (
+                        {calendarEvents.map(event => (
                             <div key={event.id} className="calendar-event-item">
                                 <strong>{event.time}</strong> - {event.title}
                             </div>
                         ))}
+                         {isCalendarLoading && <div className="widget-loading-text">Loading events...</div>}
                     </div>
                 </div>
             </div>
             <div className="dashboard-column">
                 <div className="widget grow-widget" role="region" aria-labelledby="email-list-heading">
-                    <h3 id="email-list-heading"><span className="widget-icon" aria-hidden="true">✉️</span>Email List</h3>
+                     <div className="widget-header">
+                        <h3 id="email-list-heading"><span className="widget-icon" aria-hidden="true">✉️</span>Email List</h3>
+                        <button 
+                            className="widget-refresh-button" 
+                            onClick={handleRefreshEmail} 
+                            disabled={isEmailLoading}
+                            aria-label="Refresh email list"
+                            title="Refresh email list"
+                        >
+                             <svg className={isEmailLoading ? 'spinning' : ''} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18px" height="18px">
+                                <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                            </svg>
+                        </button>
+                    </div>
                     <p className="email-list-description">Recent messages from your inbox. Scroll for more.</p>
                     <div className="list-content-wrapper" aria-label="List of emails">
-                        {mockEmails.map(email => (
+                        {emailItems.map(email => (
                             <div key={email.id} className="email-item">
                                 <strong>{email.sender}</strong> - {email.subject}
                                 <p style={{fontSize: '0.8em', color: 'var(--secondary-text-color)', margin: '4px 0 0'}}>{email.snippet}</p>
                             </div>
                         ))}
+                        {isEmailLoading && <div className="widget-loading-text">Loading emails...</div>}
                     </div>
                 </div>
             </div>

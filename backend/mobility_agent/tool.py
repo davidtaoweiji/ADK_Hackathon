@@ -3,7 +3,7 @@ import urllib.parse
 import json
 
 api_key='AIzaSyBVMS-qnZebtj6QzeAy6HDbwCDyFIzD0XA'
-def estimate_travel_time(start, destination, mode):
+def estimate_travel_time(start:str, destination:str, mode:str)-> str:
     """
     Estimates the travel time between two locations using the Google Maps Distance Matrix API.
 
@@ -71,21 +71,21 @@ def geocode(address):
         "place_id": place_id
     }
 
-def get_weather(address):
+def get_weather(address:str)->dict:
     """
     Retrieves the current weather conditions and forecast for a given address.
-
-    This function first geocodes the provided address to obtain its latitude and longitude,
-    then queries the Google Weather API to fetch the current weather and forecast data.
 
     Args:
         address (str): The address or location name to get weather information for.
 
     Returns:
-        tuple: (current_conditions, forecast) if successful,
-        or str: An error message if geocoding or weather data retrieval fails.
+        dict: A dictionary containing 'current_conditions' and 'forecast' if successful,
+                or an error message if geocoding or weather data retrieval fails.
+        current_conditions: A dictionary with current weather details.
+        forecast: A list of dictionaries with weather forecast details.
     """
-    lat, lng = geocode_address_coordinates(address, api_key)
+    lat, lng = geocode_address_coordinates(address)
+    print(f"Geocoded {address} to coordinates: ({lat}, {lng})")
     if lat is None or lng is None:
         return "Error: Unable to geocode address."
     
@@ -97,16 +97,18 @@ def get_weather(address):
         'key': api_key
     }
     response = requests.get(url, params=params)
-    data = response.json()
+    print(response)
+    # data = response.json()
+    # print(f"Weather API response: {data}")
     
-    if response.status_code == 200 and 'currentConditions' in data:
-        current_conditions = data['currentConditions']
-        forecast = data['forecast']
-        return current_conditions, forecast
-    else:
-        return "Error: Unable to fetch weather data."
+    # if response.status_code == 200 and 'currentConditions' in data:
+    #     current_conditions = data['currentConditions']
+    #     forecast = data['forecast']
+    #     return {"current_conditions":current_conditions, "forecast": forecast}
+    # else:
+    #     return {"error": "Unable to fetch weather data."}
 
-def get_uber_link(pickup_address, dropoff_address):
+def get_uber_link(pickup_address:str, dropoff_address:str) -> str:
     """
     Generates a deep link for booking an Uber ride between two addresses.
 
@@ -168,16 +170,16 @@ def nearby_search(lat, lng, place_type, num_results):
 
 def format_recommendations(recommendations):
     formatted = []
-    for place in recommendations:
-        formatted.append({
-            "name": place["name"],
-            "address": place.get("vicinity", "Address not available"),
-            "rating": place.get("rating", "Rating not available"),
-            "opening_hours": place.get("opening_hours", {}).get("open_now", "Opening hours not available")
-        })
+    # for place in recommendations:
+    #     formatted.append({
+    #         "name": place["name"],
+    #         "address": place.get("vicinity", "Address not available"),
+    #         "rating": place.get("rating", "Rating not available"),
+    #         "opening_hours": place.get("opening_hours", {}).get("open_now", "Opening hours not available")
+    #     })
     return formatted
 
-def recommend_food_places(address, num_results,food_type):
+def recommend_food_places(address:str, num_results,food_type:str)-> list:
     """
     Recommends food places near a given address using the Google Places API.
 
@@ -198,10 +200,11 @@ def recommend_food_places(address, num_results,food_type):
     food_recommendations = []
     for place_type in food_types:
         food_recommendations.extend(nearby_search(lat, lng, place_type, num_results))
+    print(food_recommendations)
     return format_recommendations(food_recommendations)
 
 
-def recommend_entertainment_places(address, num_results, entertainment_type):
+def recommend_entertainment_places(address:str, num_results:int, entertainment_type:str)-> list:
     """
     Recommends entertainment places near a given address using the Google Places API.
 
@@ -223,6 +226,7 @@ def recommend_entertainment_places(address, num_results, entertainment_type):
     entertainment_recommendations = []
     for place_type in entertainment_types:
         entertainment_recommendations.extend(nearby_search(lat, lng, place_type, num_results))
+    
     return format_recommendations(entertainment_recommendations)
 
 
@@ -233,5 +237,7 @@ if __name__ == "__main__":
     # distance = estimate_travel_time(start_location, destination_location, travel_mode)
     # print(f"Estimated travel time from {start_location} to {destination_location} by {travel_mode}: {distance}")
     # print(f"Weather at: {get_uber_link("Space Karaoke Bar & Cafe","CBRE Richardson")}")
-    # Example Uber deep link generation
-    print(recommend_food_places("Space Karaoke Bar & Cafe", 5, "restaurant"))
+    print(f"Weather at: {get_weather("CBRE Richardson")}")
+    # "hi, i want to drive to space karoke TX from cbre richardson, how long it will take"
+    # print(recommend_food_places("Space Karaoke Bar & Cafe", 5, "restaurant"))
+
