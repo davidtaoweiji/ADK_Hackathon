@@ -7,7 +7,7 @@ from google.genai import types
 import json
 import time
 import os
-from common.agent_utils import pprint_events
+
 
 APP_NAME = "hello_world_example"
 USER_ID = "user12345"
