@@ -1,4 +1,4 @@
-from tool import (
+from email_agent.tool import (
     fetch_lastest_emails,
     send_email,
     search_emails,

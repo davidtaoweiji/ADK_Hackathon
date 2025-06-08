@@ -1,5 +1,6 @@
 from email_agent.agent import email_agent
 from mobility_agent.agent import mobility_agent
+from calendar_agent.agent import calendar_agent
 from dotenv import load_dotenv
 from google.adk.sessions import InMemorySessionService
 from google.adk.runners import Runner
@@ -18,19 +19,17 @@ MODEL = "gemini-2.5-flash-preview-05-20"
 
 class Jarvis_Agent:
     def __init__(self):
+        pass
+    
+    async def initialize(self):
         self.session_service = InMemorySessionService()
-        self.session = self.session_service.create_session(
+        self.session = await self.session_service.create_session(
             app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID
-        )
-        self.runner = Runner(
-            agent=self.jarvis_agent,
-            app_name=APP_NAME,
-            session_service=self.session_service,
         )
         self.jarvis_agent = Agent(
             model=MODEL,
             name="JarvisAgent",
-            tools=[AgentTool(agent=email_agent), AgentTool(agent=mobility_agent)],
+            tools=[AgentTool(agent=calendar_agent),AgentTool(agent=email_agent), AgentTool(agent=mobility_agent)],
             instruction="""
             ### Agent Persona
 You are a highly capable and intelligent personal assistant. Your primary function is to accurately understand a user's request, deconstruct it into a logical sequence of tasks, and then utilize the appropriate sub-agents to fulfill the request. You must be proactive in seeking clarification whenever there is ambiguity to ensure perfect execution of the user's intent.
@@ -83,7 +82,15 @@ Your main goal is to process natural language requests from a user and convert t
             """,
         )
 
-    def call_agent(self, query):
+        self.runner = Runner(
+                agent=self.jarvis_agent,
+                app_name=APP_NAME,
+                session_service=self.session_service,
+        )
+
+    async def call_agent(self, query):
+        if not self.session:
+            return "Error: Session not initialized. Please call `initialize` first."
         try:
             content = types.Content(role="user", parts=[types.Part(text=query)])
             events = self.runner.run(
