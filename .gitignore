@@ -1,0 +1,4 @@
+__pycache__/
+token.json
+backend/email_agent/attachments/
+.env
