@@ -7,12 +7,6 @@ from email_agent.tool import (
     download_attachments,
 )
 from google.adk.agents import Agent
-from google.adk.sessions import InMemorySessionService
-from google.adk.runners import Runner
-import asyncio
-from google.genai import types
-from dotenv import load_dotenv
-
 
 APP_NAME = "hello_world_example"
 USER_ID = "user12345"
@@ -31,7 +25,7 @@ email_agent = Agent(
         set_auto_reply,
         download_attachments,
     ],
-    instruction="""You are EmailAgent, an intelligent email management assistant. Your core functions include sending, retrieving, searching, handling attachments and auto-replies. Always follow these rules:
+    instruction="""You are EmailAgent, an intelligent email management assistant. Your core functions include sending, retrieving, searching, replying, download attachments and setup auto-replies. Always follow these rules:
 
     == CORE PRINCIPLES ==
     1. CONFIRM BEFORE ACTION (except search/retrieving)
@@ -54,55 +48,13 @@ email_agent = Agent(
     5. SET UP OR MODIFY AUTO-REPLY
     
     6. DOWNLOAD ATTACHMENTS
+
+    # --- Response Protocol --- #
+    Your response MUST always be a JSON object with the following structure:
+    `{"status": "STATUS_CODE", "data": "your_result", "question_to_user": "your_question"}`
+    - If you find the final result using a function, set `status` to `SUCCESS` and put the result in `data`.
+    - If you need to ask for clarification, set `status` to `NEEDS_USER_INPUT` and put the question in `question_to_user`.
     """,
 )
 
-# Session and Runner
 
-
-def call_agent(runner, query):
-    content = types.Content(role="user", parts=[types.Part(text=query)])
-    events = runner.run(user_id=USER_ID, session_id=SESSION_ID, new_message=content)
-    for event in events:
-        if event.is_final_response():
-            final_response = event.content.parts[0].text
-            print("Agent Response: ", final_response)
-    return events
-
-
-# async def main():
-#     API_KEY = "AIzaSyD6zVPESBqOyQ6tvtVbfHvhgm-dC3ikKC0"
-#     os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "FALSE" # Use Vertex AI API
-#     os.environ["GOOGLE_API_KEY"] = API_KEY
-#     session_service = InMemorySessionService()
-#     session = await session_service.create_session(app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID)
-#     runner = Runner(agent=email_agent, app_name=APP_NAME, session_service=session_service)
-#     events = call_agent(runner, "hello, I want to send an email to jtw1091367152@qq.com, subject is 'test', content is 'this is a test email'.")
-#     pprint_events(events)
-
-
-# if __name__ == "__main__":
-#     asyncio.run(main())
-async def main():
-    # API_KEY = "AIzaSyAdG_BgebQW0BxcAopaze71eCrxz4Et6Tg"
-    # os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "TRUE"
-    # os.environ["GOOGLE_API_KEY"] = API_KEY
-    load_dotenv()
-    session_service = InMemorySessionService()
-    session = await session_service.create_session(
-        app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID
-    )
-    runner = Runner(
-        agent=email_agent, app_name=APP_NAME, session_service=session_service
-    )
-    print("Type your message (type 'exit' to quit):")
-    while True:
-        user_input = input("> ")
-        if user_input.lower() == "exit":
-            break
-        events = call_agent(runner, user_input)
-        # pprint_events([events])
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
