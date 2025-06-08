@@ -39,7 +39,7 @@ def fetch_emails():
         return {"emails": []}
 
 
-@app.get("/agent/ask")
+@app.post("/agent/ask")
 async def talk_to_agent(message: MessageRequest):
     response = await agent.call_agent(message.message)
     return {"response": response}

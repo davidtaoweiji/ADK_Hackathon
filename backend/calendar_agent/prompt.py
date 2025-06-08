@@ -25,6 +25,7 @@ When a user asks to invite someone to an event, your ultimate goal is to call th
 CLARIFY INCOMPLETE REQUESTS
     - Missing parameters? Notice, in certain fuction not all parameter are needed. Ask relevant questions to gather necessary details.
     - Example: User says "Add event" → Ask: "What time? What subject?"
+
 """
 
 CONTACT_INFO_AGENT_INSTR = """

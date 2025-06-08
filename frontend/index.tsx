@@ -374,14 +374,23 @@ const App: React.FC = () => {
     setChatHistory(prev => [...prev, loadingBotMessage]);
 
     // Simulate API call
-    setTimeout(() => {
-      const botResponseText = `You said: "${textToSend}"`; // Mocked response
-      const newBotMessage: Message = { id: `bot-${Date.now()}`, text: botResponseText, sender: 'bot' };
+    try {
+      const response = await fetch("http://127.0.0.1:8000/agent/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: textToSend }),
+      });
+      const data = await response.json();
+      const botResponseText = data.response;
 
+      const newBotMessage: Message = { id: `bot-${Date.now()}`, text: botResponseText, sender: 'bot' };
       setChatHistory(prev => prev.map(msg => msg.id === loadingBotMessageId ? newBotMessage : msg ));
       speakText(botResponseText);
+    } catch (error) {
+      console.error("Error communicating with the assistant:", error);
+    } finally {
       setIsBotThinking(false);
-    }, 2000);
+    }
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
