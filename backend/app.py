@@ -15,8 +15,10 @@ app.add_middleware(
 )
 agent = Jarvis_Agent()
 
+
 class MessageRequest(BaseModel):
     message: str
+
 
 @app.get("/fetch_latest_emails")
 def fetch_emails():
@@ -28,7 +30,6 @@ def fetch_emails():
 
 
 @app.get("/agent/ask")
-def talk_to_agent(message:MessageRequest):
+def talk_to_agent(message: MessageRequest):
     response = agent.call_agent(message.message)
     return {"response": response}
-    

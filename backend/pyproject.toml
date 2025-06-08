@@ -20,5 +20,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry]
 packages = [
     { include = "common" },
-    { include = "email_agent" }
+    { include = "email_agent" },
+    { include = "calendar_agent" },
+    { include = "mobility_agent" }
 ]
