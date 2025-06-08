@@ -71,20 +71,20 @@ def call_agent(runner, query):
 
 # if __name__ == "__main__":
 #     asyncio.run(main())
-# async def main():
-#     API_KEY = "AIzaSyD6zVPESBqOyQ6tvtVbfHvhgm-dC3ikKC0"
-#     os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "FALSE"
-#     os.environ["GOOGLE_API_KEY"] = API_KEY
-#     session_service = InMemorySessionService()
-#     session = await session_service.create_session(app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID)
-#     runner = Runner(agent=email_agent, app_name=APP_NAME, session_service=session_service)
-#     print("Type your message (type 'exit' to quit):")
-#     while True:
-#         user_input = input("> ")
-#         if user_input.lower() == "exit":
-#             break
-#         events = call_agent(runner, user_input)
-#         # pprint_events([events])
+async def main():
+    API_KEY = "AIzaSyAdG_BgebQW0BxcAopaze71eCrxz4Et6Tg"
+    os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "FALSE"
+    os.environ["GOOGLE_API_KEY"] = API_KEY
+    session_service = InMemorySessionService()
+    session = await session_service.create_session(app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID)
+    runner = Runner(agent=email_agent, app_name=APP_NAME, session_service=session_service)
+    print("Type your message (type 'exit' to quit):")
+    while True:
+        user_input = input("> ")
+        if user_input.lower() == "exit":
+            break
+        events = call_agent(runner, user_input)
+        # pprint_events([events])
 
-# if __name__ == "__main__":
-#     asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())
