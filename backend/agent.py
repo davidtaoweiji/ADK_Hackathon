@@ -16,17 +16,7 @@ USER_ID = "user12345"
 SESSION_ID = "session12345"
 MODEL = "gemini-2.5-flash-preview-05-20"
 
-
-class Jarvis_Agent:
-    def __init__(self):
-        pass
-    
-    async def initialize(self):
-        self.session_service = InMemorySessionService()
-        self.session = await self.session_service.create_session(
-            app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID
-        )
-        self.jarvis_agent = Agent(
+root_agent =  Agent(
             model=MODEL,
             name="JarvisAgent",
             tools=[AgentTool(agent=calendar_agent),AgentTool(agent=email_agent), AgentTool(agent=mobility_agent)],
@@ -83,6 +73,16 @@ Your main goal is to process natural language requests from a user and convert t
 """,
         )
 
+class Jarvis_Agent:
+    def __init__(self):
+        pass
+    
+    async def initialize(self):
+        self.session_service = InMemorySessionService()
+        self.session = await self.session_service.create_session(
+            app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID
+        )
+        self.jarvis_agent = root_agent
         self.runner = Runner(
                 agent=self.jarvis_agent,
                 app_name=APP_NAME,
