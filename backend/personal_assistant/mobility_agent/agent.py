@@ -1,4 +1,4 @@
-from mobility_agent.tool import (
+from personal_assistant.mobility_agent.tool import (
     estimate_travel_time,
     recommend_entertainment_places,
     recommend_food_places,

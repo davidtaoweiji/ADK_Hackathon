@@ -3,7 +3,7 @@ import base64
 from email.mime.text import MIMEText
 from datetime import datetime
 from typing import Optional, List
-from common.tool_utils import get_google_service
+from personal_assistant.common.tool_utils import get_google_service
 import os
 
 SCOPES = [
