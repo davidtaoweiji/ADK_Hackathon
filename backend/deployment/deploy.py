@@ -36,10 +36,12 @@ def create(config: dict[str, str]) -> None:
     dependency_list = [
         "google-adk>=1.0.0,<2.0.0",
         "google-cloud-aiplatform[agent_engines]>=1.96.0",
+        "google-auth-oauthlib>=1.2.2,<2.0.0",
         "google-genai==1.16.1",
         "pydantic>=2.10.6,<3.0.0",
         "absl-py>=2.2.1,<3.0.0",
         "requests>=2.32.3,<3.0.0",
+        "deprecated"
     ]
 
     # Create the agent engine on Vertex AI
