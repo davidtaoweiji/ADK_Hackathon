@@ -8,10 +8,6 @@ from personal_assistant.email_agent.tool import (
 )
 from google.adk.agents import Agent
 
-APP_NAME = "hello_world_example"
-USER_ID = "user12345"
-SESSION_ID = "session12345"
-AGENT_NAME = "hello_word_agent"
 MODEL = "gemini-2.5-flash-preview-05-20"
 
 email_agent = Agent(
@@ -56,5 +52,3 @@ email_agent = Agent(
     - If you need to ask for clarification, set `status` to `NEEDS_USER_INPUT` and put the question in `question_to_user`.
     """,
 )
-
-

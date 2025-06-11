@@ -336,13 +336,3 @@ def mark_email(message_ids, read: Optional[str] = None, starred: Optional[str] =
             id=msg_id,
             body={"addLabelIds": labels_to_add, "removeLabelIds": labels_to_remove},
         ).execute()
-
-
-# if __name__ == "__main__":
-    # temp = check_emails(max_results=20, after="2025/01/01", before="2025/02/01")
-    # temp = search_emails(max_results=2, keyword="attachment",sender="jtw1091367152@qq.com")
-    # reply_email("1970b98ca4e3b4fa", "This is a test reply email.")
-    # print(len(temp))
-    # print(temp)
-    # result = send_email("wenhaos@umich.edu", "Test Subject", "Hello from Gmail API!")
-    # print(result)

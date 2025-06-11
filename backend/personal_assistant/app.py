@@ -7,6 +7,8 @@ import uvicorn
 from contextlib import asynccontextmanager
 
 agent = Jarvis_Agent()
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup logic
@@ -17,6 +19,7 @@ async def lifespan(app: FastAPI):
     print("Shutting down...")
     # await disconnect_from_db()
 
+
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
@@ -25,6 +28,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 class MessageRequest(BaseModel):
     message: str
@@ -44,6 +48,9 @@ async def talk_to_agent(message: MessageRequest):
     response = await agent.call_agent(message.message)
     return {"response": response}
 
+
 # Add this block to run the app directly
 if __name__ == "__main__":
-    uvicorn.run("app:app", host="127.0.0.1", port=8000, reload=True)# Add this block to run the app directly
+    uvicorn.run(
+        "app:app", host="127.0.0.1", port=8000, reload=True
+    )  # Add this block to run the app directly

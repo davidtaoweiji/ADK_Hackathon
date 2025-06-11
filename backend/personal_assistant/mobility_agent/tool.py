@@ -1,9 +1,12 @@
 import requests
 import urllib.parse
 import json
+import os
+from dotenv import load_dotenv
 
-api_key = "AIzaSyAdG_BgebQW0BxcAopaze71eCrxz4Et6Tg"
-SAMPLE_USER_PROFILE_PATH = "../../db/user_profile.json"
+load_dotenv()
+
+API_KEY = os.getenv("MOBILITY_API_KEY")
 
 
 def estimate_travel_time(start: str, destination: str, mode: str) -> str:
@@ -25,7 +28,7 @@ def estimate_travel_time(start: str, destination: str, mode: str) -> str:
         "destinations": destination,
         "mode": mode,
         "departure_time": "now",
-        "key": api_key,
+        "key": API_KEY,
     }
     response = requests.get(url, params=params)
     data = response.json()
@@ -39,7 +42,7 @@ def estimate_travel_time(start: str, destination: str, mode: str) -> str:
 
 def geocode_address_coordinates(address):
     url = "https://maps.googleapis.com/maps/api/geocode/json"
-    params = {"address": address, "key": api_key}
+    params = {"address": address, "key": API_KEY}
     response = requests.get(url, params=params)
     data = response.json()
     if response.status_code == 200 and data["results"]:
@@ -60,7 +63,7 @@ def geocode(address):
         or string: An error message if geocoding fails.
     """
     base_url = "https://maps.googleapis.com/maps/api/geocode/json"
-    params = {"address": address, "key": api_key}
+    params = {"address": address, "key": API_KEY}
     response = requests.get(base_url, params=params)
     data = response.json()
     if data["status"] != "OK":
@@ -93,7 +96,7 @@ def get_current_weather(address: str) -> dict:
         return {"error": "Unable to geocode address"}
 
     url = "https://weather.googleapis.com/v1/currentConditions:lookup"
-    params = {"location.latitude": lat, "location.longitude": lng, "key": api_key}
+    params = {"location.latitude": lat, "location.longitude": lng, "key": API_KEY}
     response = requests.get(url, params=params)
     if response.status_code == 200:
         return response.json()
@@ -117,18 +120,12 @@ def get_future_weather(address: str) -> dict:
     lat, lng = geocode_address_coordinates(address)
     if lat is None or lng is None:
         return {"error": "Unable to geocode address"}
-    with open(SAMPLE_USER_PROFILE_PATH, "r") as file:
-        data = json.load(file)
-    timezone = data.get(
-        "timezone", "America/Los_Angeles"
-    )  # Default to Pacific Time if not specified
-
     url = "https://weather.googleapis.com/v1/forecast/hours:lookup"
     params = {
         "location.latitude": lat,
         "location.longitude": lng,
         "hours": 24,
-        "key": api_key,
+        "key": API_KEY,
     }
     response = requests.get(url, params=params)
     if response.status_code == 200:
@@ -285,7 +282,7 @@ def nearby_search(lat, lng, place_type, num_results):
     url = "https://places.googleapis.com/v1/places:searchNearby"
     headers = {
         "Content-Type": "application/json",
-        "X-Goog-Api-Key": api_key,
+        "X-Goog-Api-Key": API_KEY,
         "X-Goog-FieldMask": "places.displayName,places.formattedAddress,places.rating,places.currentOpeningHours.weekdayDescriptions,places.priceRange",
     }
     body = {
@@ -299,19 +296,3 @@ def nearby_search(lat, lng, place_type, num_results):
     response = requests.post(url, headers=headers, json=body)
     data = response.json()
     return data.get("places", [])
-
-
-if __name__ == "__main__":
-    # start_location = "Space Karaoke Bar & Cafe"
-    # destination_location = "CBRE Richardson"
-    # travel_mode = "driving"  # Options: 'driving', 'walking
-    # distance = estimate_travel_time(start_location, destination_location, travel_mode)
-    # print(f"Estimated travel time from {start_location} to {destination_location} by {travel_mode}: {distance}")
-    # print(f"Weather at: {get_uber_link("Space Karaoke Bar & Cafe","CBRE Richardson")}")
-    # print(f"Weather at: {get_weather("CBRE Richardson TX")}")
-    # print(get_future_weather("CBRE Richardson TX"))
-    # "hi, i want to drive to space karoke TX from cbre richardson, how long it will take"
-    # print(recommend_food_places("Space Karaoke Bar & Cafe, TX", 5, "restaurant"))
-    temp = recommend_food_places("CBRE Richardson, TX", 5, "restaurant")
-    print(len(temp))
-    print(temp)

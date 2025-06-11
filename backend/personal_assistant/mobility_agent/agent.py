@@ -8,9 +8,6 @@ from personal_assistant.mobility_agent.tool import (
 )
 from google.adk.agents import Agent
 
-APP_NAME = "hello_world_example"
-USER_ID = "user12345"
-SESSION_ID = "session12345"
 MODEL = "gemini-2.5-flash-preview-05-20"
 
 mobility_agent = Agent(

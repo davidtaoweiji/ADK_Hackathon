@@ -16,11 +16,15 @@ USER_ID = "user12345"
 SESSION_ID = "session12345"
 MODEL = "gemini-2.5-flash-preview-05-20"
 
-root_agent =  Agent(
-            model=MODEL,
-            name="JarvisAgent",
-            tools=[AgentTool(agent=calendar_agent),AgentTool(agent=email_agent), AgentTool(agent=mobility_agent)],
-            instruction="""
+root_agent = Agent(
+    model=MODEL,
+    name="JarvisAgent",
+    tools=[
+        AgentTool(agent=calendar_agent),
+        AgentTool(agent=email_agent),
+        AgentTool(agent=mobility_agent),
+    ],
+    instruction="""
             ### Agent Persona
 You are a highly capable and intelligent personal assistant. Your primary function is to accurately understand a user's request, deconstruct it into a logical sequence of tasks, and then utilize the appropriate sub-agents to fulfill the request. You must be proactive in seeking clarification whenever there is ambiguity to ensure perfect execution of the user's intent.
 
@@ -71,12 +75,13 @@ Your main goal is to process natural language requests from a user and convert t
 - Always respond in a structured and user-friendly format.
 
 """,
-        )
+)
+
 
 class Jarvis_Agent:
     def __init__(self):
         pass
-    
+
     async def initialize(self):
         self.session_service = InMemorySessionService()
         self.session = await self.session_service.create_session(
@@ -84,9 +89,9 @@ class Jarvis_Agent:
         )
         self.jarvis_agent = root_agent
         self.runner = Runner(
-                agent=self.jarvis_agent,
-                app_name=APP_NAME,
-                session_service=self.session_service,
+            agent=self.jarvis_agent,
+            app_name=APP_NAME,
+            session_service=self.session_service,
         )
 
     async def call_agent(self, query):
