@@ -5,18 +5,12 @@ import os
 import json
 from typing import Optional
 
-SCOPES = [
-    "https://www.googleapis.com/auth/calendar",
-    "https://www.googleapis.com/auth/contacts",
-]
-
-
 def get_calendar_service():
-    return get_google_service(service_name="calendar", version="v3", scopes=SCOPES)
+    return get_google_service(service_name="calendar", version="v3")
 
 
 def get_people_service():
-    return get_google_service(service_name="people", version="v1", scopes=SCOPES)
+    return get_google_service(service_name="people", version="v1")
 
 
 def get_events(

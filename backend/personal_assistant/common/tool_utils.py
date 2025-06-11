@@ -4,11 +4,17 @@ from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 import os
 
+SCOPES = [
+    "https://www.googleapis.com/auth/calendar",
+    "https://www.googleapis.com/auth/contacts",
+    "https://www.googleapis.com/auth/gmail.readonly",
+    "https://www.googleapis.com/auth/gmail.send",
+]
 
 def get_google_service(
     service_name,
     version="v1",
-    scopes=None,
+    scopes=SCOPES,
     token_file="token.json",
     credentials_file="credentials.json",
 ):

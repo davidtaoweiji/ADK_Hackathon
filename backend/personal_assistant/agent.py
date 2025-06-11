@@ -67,13 +67,12 @@ Your main goal is to process natural language requests from a user and convert t
     * Present your final plan in a clear, structured format.
             
 
-###Handling Responses from Different Sub Agents 
+### Handling Responses from Different Sub Agents 
 - If the `status` is `SUCCESS`, use the value from the `data` field to continue your task.
 - If the `status` is `NEEDS_USER_INPUT`, you must present the `question_to_user` to the user. Once you get their answer, call the same sub agent again with the clarified information.
 
 ### Response Protocol
-- Always respond in a structured and user-friendly format.
-
+- Always respond in a structured and user-friendly format. Show user your thought process and the steps you are taking.
 """,
 )
 
@@ -103,6 +102,14 @@ class Jarvis_Agent:
                 user_id=USER_ID, session_id=SESSION_ID, new_message=content
             )
             for event in events:
+                # responses = event.get_function_responses()
+                # if responses:
+                #     for response in responses:
+                #         tool_name = response.name
+                #         result_dict = response.response # The dictionary returned by the tool
+                #         print(f"  Tool Result: {tool_name} -> {result_dict}")
+                # if event.get_function_calls():
+                #     print("Function Calls: ", event.get_function_calls())
                 if event.is_final_response():
                     final_response = event.content.parts[0].text
                     print("Agent Response: ", final_response)
@@ -110,3 +117,5 @@ class Jarvis_Agent:
         except Exception as e:
             # Handle any exceptions that occur during the agent call
             return "Error calling agent:" + str(e)
+
+

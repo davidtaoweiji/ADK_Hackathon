@@ -6,14 +6,8 @@ from typing import Optional, List
 from personal_assistant.common.tool_utils import get_google_service
 import os
 
-SCOPES = [
-    "https://www.googleapis.com/auth/gmail.readonly",
-    "https://www.googleapis.com/auth/gmail.send",
-]
-
-
 def get_gmail_service():
-    return get_google_service(service_name="gmail", version="v1", scopes=SCOPES)
+    return get_google_service(service_name="gmail", version="v1")
 
 
 def fetch_lastest_emails(
