@@ -6,7 +6,7 @@ authors = [
     {name = "davidtaoweiji", email = "davidtaoweiji@gmail.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.11"
 dependencies = [
     "google-adk>=1.0.0,<2.0.0",
     "google-auth-oauthlib>=1.2.2,<2.0.0",
@@ -19,16 +19,11 @@ dependencies = [
     "cloudpickle>=3.1.1"
 ]
 
-
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 packages = [
-    { include = "common" },
-    { include = "email_agent" },
-    { include = "calendar_agent" },
-    { include = "mobility_agent" },
-    { include = "deployment" }
+    { include = "personal_assistant" },
 ]

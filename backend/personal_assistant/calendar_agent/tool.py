@@ -1,6 +1,6 @@
 from googleapiclient.errors import HttpError
 from datetime import datetime, timedelta
-from common.tool_utils import get_google_service
+from personal_assistant.common.tool_utils import get_google_service
 import os
 import json
 from typing import Optional

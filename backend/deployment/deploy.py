@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import vertexai
 from vertexai import agent_engines
 from vertexai.preview.reasoning_engines import AdkApp
-from agent import root_agent
+from personal_assistant.agent import root_agent
 
 FLAGS = flags.FLAGS
 
@@ -35,15 +35,13 @@ def create(config: dict[str, str]) -> None:
     # Define the Python package dependencies for the agent environment
     dependency_list = [
         "google-adk>=1.0.0,<2.0.0",
-        "google-auth-oauthlib>=1.2.2,<2.0.0",
         "google-cloud-aiplatform[agent_engines]>=1.96.0",
+        "google-auth-oauthlib>=1.2.2,<2.0.0",
         "google-genai==1.16.1",
-        "fastapi>=0.115.12,<0.116.0",
-        "uvicorn>=0.34.3,<0.35.0",
         "pydantic>=2.10.6,<3.0.0",
         "absl-py>=2.2.1,<3.0.0",
         "requests>=2.32.3,<3.0.0",
-        "cloudpickle>=3.1.1"
+        "deprecated"
     ]
 
     # Create the agent engine on Vertex AI
@@ -52,7 +50,7 @@ def create(config: dict[str, str]) -> None:
         display_name="Jarvis-Agent-v2",
         description="A helpful personal assistant.",
         requirements=dependency_list,
-        extra_packages=["../"],
+        extra_packages=["./personal_assistant"],
     )
 
     print(f"Deployment successful! Agent resource name: {deployed_agent_engine.resource_name}")
