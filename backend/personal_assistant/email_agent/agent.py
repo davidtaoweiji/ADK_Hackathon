@@ -12,7 +12,7 @@ MODEL = "gemini-2.5-flash-preview-05-20"
 
 email_agent = Agent(
     model=MODEL,
-    name="EmailAgent",
+    name="email_agent",
     tools=[
         fetch_lastest_emails,
         send_email,
@@ -21,7 +21,9 @@ email_agent = Agent(
         set_auto_reply,
         download_attachments,
     ],
-    instruction="""You are EmailAgent, an intelligent email management assistant. Your core functions include sending, retrieving, searching, replying, download attachments and setup auto-replies. Always follow these rules:
+    instruction="""You are email_agent, an intelligent email management assistant. 
+    Your core functions include sending, retrieving, searching, replying, download attachments and setup auto-replies. 
+    **Once you complete one request from root_agent, always summarize and output the current state to the user, then transfer back to the root_agent.**
 
     == CORE PRINCIPLES ==
     1. CONFIRM BEFORE ACTION (except search/retrieving)
@@ -32,23 +34,5 @@ email_agent = Agent(
     - Missing parameters? Notice, in certain fuction not all parameter are needed. Ask relevant questions to gather necessary details.
     - Example: User says "Send email" → Ask: "To whom? Subject? Content?"
 
-    == FUNCTIONS ==
-    1. SEND EMAIL
-
-    2. RETRIEVE RECENT EMAIL
-
-    3. SEARCH EMAILS
-
-    4. REPLY TO EMAIL
-
-    5. SET UP OR MODIFY AUTO-REPLY
-    
-    6. DOWNLOAD ATTACHMENTS
-
-    # --- Response Protocol --- #
-    Your response MUST always be a JSON object with the following structure:
-    `{"status": "STATUS_CODE", "data": "your_result", "question_to_user": "your_question"}`
-    - If you find the final result using a function, set `status` to `SUCCESS` and put the result in `data`.
-    - If you need to ask for clarification, set `status` to `NEEDS_USER_INPUT` and put the question in `question_to_user`.
     """,
 )

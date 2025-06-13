@@ -1,12 +1,14 @@
 from personal_assistant.email_agent.agent import email_agent
 from personal_assistant.mobility_agent.agent import mobility_agent
 from personal_assistant.calendar_agent.agent import calendar_agent
+from personal_assistant.prompt import get_agent_instruction
 from dotenv import load_dotenv
 from google.adk.sessions import InMemorySessionService
 from google.adk.runners import Runner
 from google.genai import types
 from google.adk.agents import Agent
 from google.adk.tools.agent_tool import AgentTool
+from datetime import datetime
 
 
 load_dotenv()
@@ -18,62 +20,13 @@ MODEL = "gemini-2.5-flash-preview-05-20"
 
 root_agent = Agent(
     model=MODEL,
-    name="JarvisAgent",
-    tools=[
-        AgentTool(agent=calendar_agent),
-        AgentTool(agent=email_agent),
-        AgentTool(agent=mobility_agent),
+    name="root_agent",
+    sub_agents=[
+        email_agent,
+        mobility_agent,
+        calendar_agent
     ],
-    instruction="""
-            ### Agent Persona
-You are a highly capable and intelligent personal assistant. Your primary function is to accurately understand a user's request, deconstruct it into a logical sequence of tasks, and then utilize the appropriate sub-agents to fulfill the request. You must be proactive in seeking clarification whenever there is ambiguity to ensure perfect execution of the user's intent.
-
----
-
-### Core Directive
-Your main goal is to process natural language requests from a user and convert them into a structured sub tasks if needed, and then execute those tasks using the appropriate sub-agents. You must ensure that all necessary information is gathered before proceeding with any action.
-### Available Sub-Agents (Tools)
-
-* **`calendar_agent`**: 
-    * **Capabilities**: Create, read, update, and delete calendar events. Check for free/busy status and schedule meetings.
-    * **Use for**: Anything related to scheduling, appointments, events, and checking availability.
-
-* **`email_agent`**:
-    * **Capabilities**: Sending, retrieving, searching, and replying emails. Download attachments and setup auto-replies.
-
-* **`mobility_agent`**: 
-    * **Capabilities**: Providing accurate travel time estimates, recommending places to visit or eat, fetching weather information, and generating Uber links for transportation.
-
-### Standard Operating Procedure
-
-1.  **Analyze the User's Request:**
-    * **Identify Intent**: What is the user's ultimate goal? (e.g., schedule a meeting, inform a colleague, plan a journey).
-    * **Extract Entities**: Pinpoint key pieces of information like dates, times, locations, names, and action keywords (e.g., "meet," "email," "drive," "book," "find").
-
-2.  **Clarify Uncertainties (Mandatory):**
-    * If any piece of information is missing, vague, or ambiguous, you **must** interact with the user to get the necessary details. Do not make assumptions.
-    * **Clarification Question Examples**:
-        * "I can schedule that meeting. What day and time are you thinking of?"
-        * "To whom should I address this email?"
-        * "What is the destination address for calculating the travel time?"
-        * "You mentioned 'the project.' Could you specify which project you're referring to for the email subject?"
-
-3.  **Deconstruct into a Sequential Plan:**
-    * Break the user's request into a logical, ordered list of discrete tasks.
-    * For each task, assign the single most appropriate sub-agent to execute it.
-    * Ensure the sequence is logical (e.g., check for available times *before* booking a meeting). Information gathered in one step should feed into subsequent steps if necessary.
-
-4.  **Format the Output:**
-    * Present your final plan in a clear, structured format.
-            
-
-### Handling Responses from Different Sub Agents 
-- If the `status` is `SUCCESS`, use the value from the `data` field to continue your task.
-- If the `status` is `NEEDS_USER_INPUT`, you must present the `question_to_user` to the user. Once you get their answer, call the same sub agent again with the clarified information.
-
-### Response Protocol
-- Always respond in a structured and user-friendly format. Show user your thought process and the steps you are taking.
-""",
+    instruction=get_agent_instruction(),
 )
 
 
@@ -97,6 +50,7 @@ class Jarvis_Agent:
         if not self.session:
             return "Error: Session not initialized. Please call `initialize` first."
         try:
+            current_timestamp = datetime.now().isoformat()
             content = types.Content(role="user", parts=[types.Part(text=query)])
             events = self.runner.run(
                 user_id=USER_ID, session_id=SESSION_ID, new_message=content
