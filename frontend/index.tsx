@@ -189,12 +189,46 @@ interface EmailItem {
 }
 
 const initialCalendarEvents: CalendarEvent[] = [
-    { id: 'cal1', time: '09:00 AM', title: 'Daily Stand-up' },
-    { id: 'cal2', time: '10:00 AM', title: 'Client Onboarding Call' },
-    { id: 'cal3', time: '11:30 AM', title: 'Design Review Session' },
-    { id: 'cal4', time: '01:00 PM', title: 'Lunch Break' },
-    { id: 'cal5', time: '02:00 PM', title: 'Feature Planning Meeting' },
 ];
+
+interface WeatherInfo {
+  currentTime: string;
+  timeZone: { id: string };
+  isDaytime: boolean;
+  weatherCondition: {
+    iconBaseUri: string;
+    description: { text: string; languageCode: string };
+    type: string;
+  };
+  temperature: { degrees: number; unit: string };
+  feelsLikeTemperature: { degrees: number; unit: string };
+  dewPoint: { degrees: number; unit: string };
+  heatIndex: { degrees: number; unit: string };
+  windChill: { degrees: number; unit: string };
+  relativeHumidity: number;
+  uvIndex: number;
+  precipitation: {
+    probability: { percent: number; type: string };
+    snowQpf: { quantity: number; unit: string };
+    qpf: { quantity: number; unit: string };
+  };
+  thunderstormProbability: number;
+  airPressure: { meanSeaLevelMillibars: number };
+  wind: {
+    direction: { degrees: number; cardinal: string };
+    speed: { value: number; unit: string };
+    gust: { value: number; unit: string };
+  };
+  visibility: { distance: number; unit: string };
+  cloudCover: number;
+  currentConditionsHistory: {
+    temperatureChange: { degrees: number; unit: string };
+    maxTemperature: { degrees: number; unit: string };
+    minTemperature: { degrees: number; unit: string };
+    snowQpf: { quantity: number; unit: string };
+    qpf: { quantity: number; unit: string };
+  };
+}
 
 const App: React.FC = () => {
   const [chatHistory, setChatHistory] = useState<Message[]>([]);
@@ -211,6 +245,9 @@ const App: React.FC = () => {
   const speechRecognitionRef = useRef<SpeechRecognition | null>(null);
   const chatHistoryRef = useRef<HTMLDivElement>(null);
 
+  const [weatherInfo, setWeatherInfo] = useState<WeatherInfo | null>(null);
+  const [isWeatherLoading, setIsWeatherLoading] = useState<boolean>(false);
+
   const speakText = useCallback((text: string) => {
     if (assistantVolume > 0 && 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window) {
       const utterance = new window.SpeechSynthesisUtterance(text);
@@ -223,6 +260,50 @@ const App: React.FC = () => {
       console.warn('Text-to-Speech API not supported in this browser.');
     }
   }, [assistantVolume]);
+
+
+  const fetchCalendarEvents = async () => {
+    setIsCalendarLoading(true);
+    try {
+      const response = await fetch("http://127.0.0.1:8000/fetch_calendar_events");
+      const data = await response.json();
+      if (data && Array.isArray(data.events)) {
+        const newEvents: CalendarEvent[] = data.events.map((event: any, idx: number) => ({
+          id: event.id || `cal-api-${idx}-${Date.now()}`,
+          time: event.time || event.start?.dateTime || event.start?.date || "Unknown Time",
+          title: event.title || event.summary || "No Title",
+        }));
+        setCalendarEvents(newEvents);
+      } else {
+        setCalendarEvents([]);
+      }
+    } catch (error) {
+      console.error("Failed to fetch calendar events:", error);
+      setCalendarEvents([]);
+    }
+    setIsCalendarLoading(false);
+  };
+
+  useEffect(() => {
+    fetchCalendarEvents();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const fetchWeather = async () => {
+      setIsWeatherLoading(true);
+      try {
+        const response = await fetch("http://127.0.0.1:8000/fetch_weather");
+        const data = await response.json();
+        setWeatherInfo(data.weather || null);
+      } catch (error) {
+        console.error("Failed to fetch weather:", error);
+        setWeatherInfo(null);
+      }
+      setIsWeatherLoading(false);
+    };
+    fetchWeather();
+  }, []);
 
   useEffect(() => {
     const fetchInitialEmails = async () => {
@@ -419,16 +500,14 @@ const App: React.FC = () => {
 
   const handleRefreshCalendar = () => {
     setIsCalendarLoading(true);
-    setTimeout(() => {
-        const newEvent: CalendarEvent = {
-            id: `cal-new-${Date.now()}`,
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            title: 'Freshly Updated Event'
-        };
-        // Simulate new data, e.g., add to top and take last 5
-        setCalendarEvents(prevEvents => [newEvent, ...prevEvents.slice(0, 4)]);
-        setIsCalendarLoading(false);
-    }, 1500);
+    try {
+      fetchCalendarEvents();
+    }
+    catch (error) {
+        console.error("Failed to fetch emails:", error);
+        setCalendarEvents([]);
+    }
+    setIsCalendarLoading(false);
   };
 
   const handleRefreshEmail = async () => {
@@ -463,7 +542,43 @@ const App: React.FC = () => {
             <div className="dashboard-column">
                 <div className="widget fixed-height" role="region" aria-labelledby="weather-widget-heading">
                     <h3 id="weather-widget-heading"><span className="widget-icon" aria-hidden="true">☀️</span>Weather</h3>
-                    <p>Current weather information will appear here.</p>
+                    {isWeatherLoading ? (
+                <p>Loading weather...</p>
+              ) : weatherInfo ? (
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                    <img
+                      src={weatherInfo.weatherCondition.iconBaseUri + ".svg"}
+                      alt={weatherInfo.weatherCondition.description.text}
+                      style={{ width: 36, height: 36 }}
+                    />
+                    <span style={{ fontWeight: 300, fontSize: "1.1em" }}>
+                      {weatherInfo.weatherCondition.description.text}
+                    </span>
+                  </div>
+                  <div style={{ marginTop: 8 }}>
+                    <span>
+                      <strong>{weatherInfo.temperature.degrees}°{weatherInfo.temperature.unit === "CELSIUS" ? "C" : "F"}</strong>
+                      {" "} (feels like {weatherInfo.feelsLikeTemperature.degrees}°{weatherInfo.feelsLikeTemperature.unit === "CELSIUS" ? "C" : "F"})
+                    </span>
+                    <br />
+                    <span>
+                      Humidity: {weatherInfo.relativeHumidity}% | Wind: {weatherInfo.wind.speed.value} km/h
+                    </span>
+                    <br />
+                    <span>
+                      High: {weatherInfo.currentConditionsHistory.maxTemperature.degrees}°{weatherInfo.currentConditionsHistory.maxTemperature.unit === "CELSIUS" ? "C" : "F"}
+                      {" "} | Low: {weatherInfo.currentConditionsHistory.minTemperature.degrees}°{weatherInfo.currentConditionsHistory.minTemperature.unit === "CELSIUS" ? "C" : "F"}
+                    </span>
+                    <br />
+                    <span>
+                      Cloud Cover: {weatherInfo.cloudCover}% | UV Index: {weatherInfo.uvIndex}
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <p>Weather information is unavailable.</p>
+              )}
                 </div>
                 <div className="widget grow-widget" role="region" aria-labelledby="calendar-list-heading">
                     <div className="widget-header">
@@ -482,13 +597,19 @@ const App: React.FC = () => {
                     </div>
                     <p className="calendar-list-description">Your upcoming schedule. Scroll to see more.</p>
                     <div className="list-content-wrapper" aria-label="List of calendar events">
-                        {calendarEvents.map(event => (
-                            <div key={event.id} className="calendar-event-item">
-                                <strong>{event.time}</strong> - {event.title}
-                            </div>
-                        ))}
-                         {isCalendarLoading && <div className="widget-loading-text">Loading events...</div>}
-                    </div>
+                      {calendarEvents.length === 0 && !isCalendarLoading ? (
+                          <div className="calendar-event-item" style={{ color: 'var(--secondary-text-color)' }}>
+                              You are all clear today!
+                          </div>
+                      ) : (
+                          calendarEvents.map(event => (
+                              <div key={event.id} className="calendar-event-item">
+                                  <strong>{event.time}</strong> - {event.title}
+                              </div>
+                          ))
+                      )}
+                      {isCalendarLoading && <div className="widget-loading-text">Loading events...</div>}
+                  </div>
                 </div>
             </div>
             <div className="dashboard-column">

@@ -1,5 +1,6 @@
 from google.adk.agents import Agent
 from google.adk.tools.agent_tool import AgentTool
+from google.genai import types
 from . import prompt
 from .tool import (
     get_events,
@@ -12,6 +13,10 @@ from .tool import (
 )
 
 MODEL = "gemini-2.5-flash-preview-05-20"
+
+generate_content_config = types.GenerateContentConfig(
+    temperature=0.2,
+)
 
 event_finder_agent = Agent(
     name="event_finder_agent",
@@ -44,6 +49,7 @@ calendar_agent = Agent(
         AgentTool(agent=contact_info_agent),
         AgentTool(agent=event_finder_agent),
     ],
+    generate_content_config=generate_content_config,
 )
 
 root_agent = calendar_agent

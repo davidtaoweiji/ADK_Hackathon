@@ -64,7 +64,6 @@ def fetch_lastest_emails(
                 "id": msg["id"],
             }
             output.append(email_info)
-        print(f"Fetched {len(output)} emails.")
         return output
     except HttpError as error:
         return f"An error occurred: {error}"

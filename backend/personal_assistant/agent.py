@@ -2,7 +2,6 @@ from personal_assistant.email_agent.agent import email_agent
 from personal_assistant.mobility_agent.agent import mobility_agent
 from personal_assistant.calendar_agent.agent import calendar_agent
 from personal_assistant.prompt import get_agent_instruction
-from dotenv import load_dotenv
 from google.adk.sessions import InMemorySessionService
 from google.adk.runners import Runner
 from google.genai import types
@@ -11,12 +10,17 @@ from google.adk.tools.agent_tool import AgentTool
 from datetime import datetime
 
 
-load_dotenv()
 
-APP_NAME = "hello_world_example"
+
+APP_NAME = "Jarvis Personal Assistant"
 USER_ID = "user12345"
 SESSION_ID = "session12345"
 MODEL = "gemini-2.5-flash-preview-05-20"
+
+
+generate_content_config = types.GenerateContentConfig(
+    temperature=0.2,
+)
 
 root_agent = Agent(
     model=MODEL,
@@ -27,6 +31,8 @@ root_agent = Agent(
         calendar_agent
     ],
     instruction=get_agent_instruction(),
+    generate_content_config=generate_content_config,
+    
 )
 
 
