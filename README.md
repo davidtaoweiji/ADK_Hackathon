@@ -55,4 +55,4 @@ poetry run uvicorn app:app --reload
    `npm run dev`
 
 
-## You can now play with the UI using the link provided by npm, which connects to your fastapi locally
+**You can now play with the UI using the link provided by npm, which connects to your fastapi locally**
