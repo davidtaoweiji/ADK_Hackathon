@@ -33,6 +33,17 @@ This contains everything you need to run your app locally.
 **Prerequisites:** 
 - python 3.13.2 (recommend use pyenv for version management)  
 - poetry (please follow this link: https://python-poetry.org/docs/)
+- have to setup google api project (https://console.cloud.google.com/) properly and add all the APIs (
+    "Compute Engine API",
+    "Vertex AI API",
+    "Cloud Logging API",
+    "Geocoding API",
+    "Weather API",
+    "Places API (New)",
+    "Gemini for Google Cloud API",
+    "Google Calendar API"
+)
+- store all credentials in your .env
 
 1. Install dependencies:
 ```sh
