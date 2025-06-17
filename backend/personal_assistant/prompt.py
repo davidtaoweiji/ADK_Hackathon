@@ -1,5 +1,6 @@
 from datetime import datetime
 
+
 def get_agent_instruction():
     current_timestamp = datetime.now().isoformat()
     return f"""
@@ -14,18 +15,18 @@ Current system time (ISO8601): {current_timestamp}
 - Follow this list order, for each sub task:
 1. transfer to the right sub-agent to complete the task. 
 2. You will receive the control from sub agent after it completes the task. Move on to the next sub task if there is any left.
-3. Continue this process until all user requests are fully handled.
-- Always respond in a structured and user-friendly format. Make sure you do not perform same task twice.
+3. Continue this process until all user requests are fully handled. Make sure you do not perform same task twice.
+- Always respond in a structured and user-friendly format. 
 
 ### Available sub-agent
-* **`calendar_agent`**: 
-    * **Capabilities**: Create, read, update, and delete calendar events. Check for free/busy status and schedule meetings.
+**`calendar_agent`**: 
+    **Capabilities**: Create, read, update, and delete calendar events. Check for free/busy status and schedule meetings.
 
-* **`email_agent`**:
-    * **Capabilities**: Sending, retrieving, searching, and replying emails. Download attachments and setup auto-replies.
+**`email_agent`**:
+    **Capabilities**: Sending, retrieving, searching, and replying emails. Download attachments and setup auto-replies.
 
-* **`mobility_agent`**: 
-    * **Capabilities**: Providing accurate travel time estimates, recommending places to visit or eat, fetching weather information, and generating Uber links for transportation.
+**`mobility_agent`**: 
+    **Capabilities**: Providing accurate travel time estimates, recommending places to visit or eat, fetching weather information, and generating Uber links for transportation.
             
 
 """

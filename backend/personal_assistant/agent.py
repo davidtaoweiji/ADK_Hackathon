@@ -10,8 +10,6 @@ from google.adk.tools.agent_tool import AgentTool
 from datetime import datetime
 
 
-
-
 APP_NAME = "Jarvis Personal Assistant"
 USER_ID = "user12345"
 SESSION_ID = "session12345"
@@ -25,14 +23,9 @@ generate_content_config = types.GenerateContentConfig(
 root_agent = Agent(
     model=MODEL,
     name="root_agent",
-    sub_agents=[
-        email_agent,
-        mobility_agent,
-        calendar_agent
-    ],
+    sub_agents=[email_agent, mobility_agent, calendar_agent],
     instruction=get_agent_instruction(),
     generate_content_config=generate_content_config,
-    
 )
 
 
@@ -62,14 +55,6 @@ class Jarvis_Agent:
                 user_id=USER_ID, session_id=SESSION_ID, new_message=content
             )
             for event in events:
-                # responses = event.get_function_responses()
-                # if responses:
-                #     for response in responses:
-                #         tool_name = response.name
-                #         result_dict = response.response # The dictionary returned by the tool
-                #         print(f"  Tool Result: {tool_name} -> {result_dict}")
-                # if event.get_function_calls():
-                #     print("Function Calls: ", event.get_function_calls())
                 if event.is_final_response():
                     final_response = event.content.parts[0].text
                     print("Agent Response: ", final_response)
@@ -77,5 +62,3 @@ class Jarvis_Agent:
         except Exception as e:
             # Handle any exceptions that occur during the agent call
             return "Error calling agent:" + str(e)
-
-

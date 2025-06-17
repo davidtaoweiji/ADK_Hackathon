@@ -6,6 +6,7 @@ from typing import Optional, List
 from personal_assistant.common.tool_utils import get_google_service
 import os
 
+
 def get_gmail_service():
     return get_google_service(service_name="gmail", version="v1")
 
