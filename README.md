@@ -31,8 +31,8 @@ This contains everything you need to run your app locally.
 
 ## Run Backend Locally
 **Prerequisites:** 
-python 3.13.2 (recommend use pyenv for version management)
-peotry (please follow this link https://python-poetry.org/docs/)
+- python 3.13.2 (recommend use pyenv for version management)  
+- poetry (please follow this link: https://python-poetry.org/docs/)
 
 1. Install dependencies:
 ```sh
