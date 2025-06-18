@@ -1,4 +1,3 @@
-
 # start_location = "Space Karaoke Bar & Cafe"
 # destination_location = "CBRE Richardson"
 # travel_mode = "driving"  # Options: 'driving', 'walking

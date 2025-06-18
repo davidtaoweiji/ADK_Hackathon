@@ -10,14 +10,23 @@ from personal_assistant.agent import root_agent
 FLAGS = flags.FLAGS
 
 flags.DEFINE_string("gcp_project", None, "Google Cloud project ID.")
-flags.DEFINE_string("gcp_location", None, "Google Cloud location for deployment (e.g., 'us-central1').")
+flags.DEFINE_string(
+    "gcp_location", None, "Google Cloud location for deployment (e.g., 'us-central1')."
+)
 flags.DEFINE_string("api_key", None, "API Key for the Google service.")
 flags.DEFINE_string("bucket", None, "Google Cloud project  bucket.")
-flags.DEFINE_string("agent_resource_name", None, "The resource name of an existing ReasoningEngine for deletion.")
+flags.DEFINE_string(
+    "agent_resource_name",
+    None,
+    "The resource name of an existing ReasoningEngine for deletion.",
+)
 flags.DEFINE_bool("create", False, "Set this flag to create a new agent.")
-flags.DEFINE_bool("delete", False, "Set this flag to delete an existing agent deployment.")
+flags.DEFINE_bool(
+    "delete", False, "Set this flag to delete an existing agent deployment."
+)
 
 flags.mark_bool_flags_as_mutual_exclusive(["create", "delete"])
+
 
 def create(config: dict[str, str]) -> None:
     """
@@ -41,7 +50,7 @@ def create(config: dict[str, str]) -> None:
         "pydantic>=2.10.6,<3.0.0",
         "absl-py>=2.2.1,<3.0.0",
         "requests>=2.32.3,<3.0.0",
-        "deprecated"
+        "deprecated",
     ]
 
     # Create the agent engine on Vertex AI
@@ -53,7 +62,10 @@ def create(config: dict[str, str]) -> None:
         extra_packages=["./personal_assistant"],
     )
 
-    print(f"Deployment successful! Agent resource name: {deployed_agent_engine.resource_name}")
+    print(
+        f"Deployment successful! Agent resource name: {deployed_agent_engine.resource_name}"
+    )
+
 
 def delete(resource_name: str) -> None:
     """
@@ -89,7 +101,9 @@ def main(argv: list[str]) -> None:
 
     for key, value in config_params.items():
         if not value:
-            print(f"Missing critical configuration: Please set the '{key}' environment variable or provide the corresponding flag.")
+            print(
+                f"Missing critical configuration: Please set the '{key}' environment variable or provide the corresponding flag."
+            )
             sys.exit(1)
 
     print("\n--- Deployment Configuration ---")
@@ -98,7 +112,6 @@ def main(argv: list[str]) -> None:
     print(f"  API Key:    {api_key[:5]}... (truncated)")
     print(f"  BUCKET:   {bucket}")
     print("--------------------------------\n")
-
 
     # Initialize the Vertex AI SDK
     vertexai.init(
@@ -117,14 +130,15 @@ def main(argv: list[str]) -> None:
     elif FLAGS.delete:
         resource_name = FLAGS.agent_resource_name
         if not resource_name:
-            print("Agent resource name is required to delete a deployment. Please use the --agent_resource_name flag.")
+            print(
+                "Agent resource name is required to delete a deployment. Please use the --agent_resource_name flag."
+            )
             return
         delete(resource_name)
-        
+
     else:
         print("No action specified. Use --create to deploy, --delete to remove.")
 
+
 if __name__ == "__main__":
     app.run(main)
-
-

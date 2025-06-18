@@ -11,16 +11,14 @@ from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 from common.agent_utils import start_agent_session, agent_to_client_sse
 from fastapi.responses import StreamingResponse
-from google.genai.types import (
-    Part,
-    Content
-)
-from datetime import datetime,timedelta
+from google.genai.types import Part, Content
+from datetime import datetime, timedelta
 
 load_dotenv()
 
 agent = Jarvis_Agent()
 active_sessions = {}
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -55,16 +53,18 @@ def fetch_emails():
     else:
         return {"emails": []}
 
+
 @app.get("/fetch_calendar_events")
 def fetch_calendar():
     today = datetime.now().strftime("%Y-%m-%d")
     tomorrow = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d")
-    result = get_events(start_date=today,end_date=tomorrow, max_results=10)
+    result = get_events(start_date=today, end_date=tomorrow, max_results=10)
     if result:
         return {"events": result}
     else:
         return {"events": []}
-    
+
+
 @app.get("/fetch_weather")
 def fetch_weather():
     # Placeholder for weather fetching logic
@@ -72,11 +72,11 @@ def fetch_weather():
     weather = get_current_weather("Richardson, TX")
     return {"weather": weather}
 
+
 @app.post("/agent/ask")
 async def talk_to_agent(message: MessageRequest):
     response = await agent.call_agent(message.message)
     return {"response": response}
-
 
 
 @app.get("/events/{user_id}")
@@ -85,7 +85,9 @@ async def sse_endpoint(user_id: int):
 
     # Start agent session
     user_id_str = str(user_id)
-    live_events, live_request_queue = await start_agent_session(user_id_str,"Jarvis Personal Assistant",root_agent)
+    live_events, live_request_queue = await start_agent_session(
+        user_id_str, "Jarvis Personal Assistant", root_agent
+    )
 
     # Store the request queue for this user
     active_sessions[user_id_str] = live_request_queue
@@ -112,8 +114,8 @@ async def sse_endpoint(user_id: int):
             "Cache-Control": "no-cache",
             "Connection": "keep-alive",
             "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Headers": "Cache-Control"
-        }
+            "Access-Control-Allow-Headers": "Cache-Control",
+        },
     )
 
 
@@ -136,6 +138,7 @@ async def send_message_endpoint(user_id: int, message: MessageRequest):
     live_request_queue.send_content(content=content)
     print(f"[CLIENT TO AGENT]: {data}")
     return {"status": "sent"}
+
 
 # Add this block to run the app directly
 if __name__ == "__main__":

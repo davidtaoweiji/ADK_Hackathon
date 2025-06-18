@@ -11,6 +11,7 @@ SCOPES = [
     "https://www.googleapis.com/auth/gmail.send",
 ]
 
+
 def get_google_service(
     service_name,
     version="v1",

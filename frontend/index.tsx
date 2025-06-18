@@ -485,18 +485,23 @@ const App: React.FC = () => {
   };
 
   const renderMessageContent = (message: Message) => {
-    if (message.isLoading && message.text === "Thinking") {
-      return (
-        <>
-          {message.text}
-          <span className="loading-ellipsis">
-            <span>.</span><span>.</span><span>.</span>
-          </span>
-        </>
-      );
-    }
-    return message.text;
-  };
+  if (message.isLoading && message.text === "Thinking") {
+    return (
+      <>
+        {message.text}
+        <span className="loading-ellipsis">
+          <span>.</span><span>.</span><span>.</span>
+        </span>
+      </>
+    );
+  }
+  // Preserve line breaks and whitespace from backend
+  return (
+    <span style={{ whiteSpace: 'pre-line' }}>
+      {message.text}
+    </span>
+  );
+};
 
   const handleRefreshCalendar = () => {
     setIsCalendarLoading(true);

@@ -5,6 +5,7 @@ import os
 import json
 from typing import Optional
 
+
 def get_calendar_service():
     return get_google_service(service_name="calendar", version="v3")
 
