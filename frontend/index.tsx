@@ -237,7 +237,7 @@ const App: React.FC = () => {
   const [userInput, setUserInput] = useState<string>('');
   const [isListening, setIsListening] = useState<boolean>(false);
   const [isBotThinking, setIsBotThinking] = useState<boolean>(false);
-  const [assistantVolume, setAssistantVolume] = useState<number>(0.7); 
+  const [assistantVolume, setAssistantVolume] = useState<number>(0); 
 
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>(initialCalendarEvents);
   const [emailItems, setEmailItems] = useState<EmailItem[]>([]);
@@ -249,6 +249,11 @@ const App: React.FC = () => {
 
   const [weatherInfo, setWeatherInfo] = useState<WeatherInfo | null>(null);
   const [isWeatherLoading, setIsWeatherLoading] = useState<boolean>(false);
+
+  const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
+  const [showAuthPrompt, setShowAuthPrompt] = useState<boolean>(true);
+
+  const GOOGLE_AUTH_URL = `https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=630391073901-nj714383nv367gkadb7jnojr12lm92c7.apps.googleusercontent.com&redirect_uri=http://localhost:8000/api/auth/callback/google&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcontacts+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgmail.readonly+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgmail.send&state=Jt81pmRr8D2ZxHTuoIBI08A5aaf4zu&prompt=consent&access_type=offline`;
 
   const speakText = useCallback((text: string) => {
     if (assistantVolume > 0 && 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window) {
@@ -287,65 +292,82 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchCalendarEvents();
+    if (!isAuthorized){
+    }
+    else{
+      // ouath2callback();
+      setShowAuthPrompt(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isAuthorized){
+      fetchCalendarEvents();
+      fetchWeather();
+      fetchInitialEmails();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    const fetchWeather = async () => {
-      setIsWeatherLoading(true);
-      try {
-        const response = await fetch(`${API_ENDPOINT}/fetch_weather`);
-        const data = await response.json();
-        setWeatherInfo(data.weather || null);
-      } catch (error) {
-        console.error("Failed to fetch weather:", error);
-        setWeatherInfo(null);
+  const ouath2callback = async () => {
+    try {
+      const response = await fetch("${API_ENDPOINT}/oauth2callback");
+      if (!response.ok) {
+        throw new Error("Failed to call oath callback");
       }
-      setIsWeatherLoading(false);
-    };
-    fetchWeather();
-  }, []);
+    } catch (error) {
+      console.error("Failed to call oath callback:", error);
+    }
+  };
 
-  useEffect(() => {
-    const fetchInitialEmails = async () => {
-      setIsEmailLoading(true);
-      try {
-        const response = await fetch(`${API_ENDPOINT}/fetch_latest_emails`);
-        const data = await response.json();
-        if (data && Array.isArray(data.emails)) {
-          const newEmails: EmailItem[] = data.emails.map((email: any, idx: number) => ({
-            id: email.id || `mail-api-${idx}-${Date.now()}`,
-            sender: email.from || email.sender || "Unknown Sender",
-            subject: email.subject || "No Subject",
-            snippet: email.snippet || "",
-          }));
-          setEmailItems(newEmails);
-        } else {
-          setEmailItems([]);
-        }
-      } catch (error) {
-        console.error("Failed to fetch emails:", error);
+  const fetchWeather = async () => {
+    setIsWeatherLoading(true);
+    try {
+      const response = await fetch(`${API_ENDPOINT}/fetch_weather`);
+      const data = await response.json();
+      setWeatherInfo(data.weather || null);
+    } catch (error) {
+      console.error("Failed to fetch weather:", error);
+      setWeatherInfo(null);
+    }
+    setIsWeatherLoading(false);
+  };
+   
+  const fetchInitialEmails = async () => {
+    setIsEmailLoading(true);
+    try {
+      const response = await fetch(`${API_ENDPOINT}/fetch_latest_emails`);
+      const data = await response.json();
+      if (data && Array.isArray(data.emails)) {
+        const newEmails: EmailItem[] = data.emails.map((email: any, idx: number) => ({
+          id: email.id || `mail-api-${idx}-${Date.now()}`,
+          sender: email.from || email.sender || "Unknown Sender",
+          subject: email.subject || "No Subject",
+          snippet: email.snippet || "",
+        }));
+        setEmailItems(newEmails);
+      } else {
         setEmailItems([]);
       }
-      setIsEmailLoading(false);
-    };
+    } catch (error) {
+      console.error("Failed to fetch emails:", error);
+      setEmailItems([]);
+    }
+    setIsEmailLoading(false);
+  };
 
-    fetchInitialEmails();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   useEffect(() => {
-    const welcomeMessageText = "Hello! I'm your AI assistant. How can I help you today? You can toggle my audio response using the switch in the top-left corner.";
+    const welcomeMessageText = `Hello! I'm your AI assistant. How can I help you today? You can toggle my audio response using the switch in the top-left corner.`;
     const initialBotMessage: Message = {
         id: `bot-initial-${Date.now()}`,
         text: welcomeMessageText,
         sender: 'bot'
     };
     setChatHistory([initialBotMessage]);
-    speakText(welcomeMessageText);
+    speakText("Hello! I'm your AI assistant. How can I help you today? You can toggle my audio response using the switch in the top-left corner.");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); 
+  }, []);
 
   useEffect(() => {
     const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -497,6 +519,15 @@ const App: React.FC = () => {
       </>
     );
   }
+  // Render HTML for bot messages (for the welcome message link)
+  if (message.sender === 'bot') {
+    return (
+      <span
+        style={{ whiteSpace: 'pre-line' }}
+        dangerouslySetInnerHTML={{ __html: message.text }}
+      />
+    );
+  }
   // Preserve line breaks and whitespace from backend
   return (
     <span style={{ whiteSpace: 'pre-line' }}>
@@ -544,8 +575,64 @@ const App: React.FC = () => {
 
   return (
     <div className="app-container" role="main">
-           <aside className="dashboard-panel" aria-label="Information Dashboard">
-        <div className="dashboard-content">
+      {showAuthPrompt && (
+        <>
+          <div
+            style={{
+              position: 'fixed',
+              top: 0, left: 0, right: 0, bottom: 0,
+              background: 'rgba(255,255,255,0.7)',
+              backdropFilter: 'blur(4px)',
+              zIndex: 1000,
+              pointerEvents: 'auto'
+            }}
+          />
+          <div
+            style={{
+              position: 'fixed',
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 1001,
+              background: '#fff',
+              borderTop: '1px solid #eee',
+              boxShadow: '0 -2px 16px rgba(0,0,0,0.07)',
+              padding: '24px 0 20px 0',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: 16,
+            }}
+          >
+            <span style={{fontSize: '1.1em'}}>Please authorize with Google to access full service.</span>
+            <button
+              onClick={() => {
+                window.location.href = GOOGLE_AUTH_URL;
+                setIsAuthorized(true);
+              }}
+              style={{
+                background: '#4285F4',
+                color: '#fff',
+                border: 'none',
+                borderRadius: 4,
+                padding: '12px 28px',
+                fontSize: '1.1em',
+                fontWeight: 600,
+                cursor: 'pointer',
+                boxShadow: '0 2px 8px rgba(66,133,244,0.08)'
+              }}
+              autoFocus
+            >
+              Authorize with Google
+            </button>
+          </div>
+        </>
+      )}
+
+      {/* Main app content, blurred if not authorized */}
+      
+        <aside className="dashboard-panel" aria-label="Information Dashboard">
+        <div className="dashboard-content"  style={showAuthPrompt ? { filter: 'blur(4px)', pointerEvents: 'none', userSelect: 'none' } : {}}>
             <div className="dashboard-column">
                 <div className="widget fixed-height" role="region" aria-labelledby="weather-widget-heading">
                     <h3 id="weather-widget-heading"><span className="widget-icon" aria-hidden="true">☀️</span>Weather</h3>

@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from pydantic import BaseModel
 from email_agent.tool import fetch_lastest_emails
 from calendar_agent.tool import get_events
@@ -10,9 +10,12 @@ import uvicorn
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 from common.agent_utils import start_agent_session, agent_to_client_sse
-from fastapi.responses import StreamingResponse
+from fastapi.responses import RedirectResponse, StreamingResponse
 from google.genai.types import Part, Content
 from datetime import datetime, timedelta
+import requests
+import json
+import os
 
 load_dotenv()
 
@@ -139,9 +142,39 @@ async def send_message_endpoint(user_id: int, message: MessageRequest):
     print(f"[CLIENT TO AGENT]: {data}")
     return {"status": "sent"}
 
+@app.get("/oauth2callback")
+def oauth2callback(request: Request, code: str = None, error: str = None):
+    if error:
+        return {"error": error}
+    if not code:
+        return {"error": "No code provided"}
+
+    # Exchange code for tokens
+    token_url = "https://oauth2.googleapis.com/token"
+    data = {
+        "code": code,
+        "client_id": os.getenv("GOOGLE_CLIENT_ID"),
+        "client_secret": os.getenv("GOOGLE_CLIENT_SECRET"),
+        "redirect_uri": os.getenv("GOOGLE_REDIRECT_URI"),
+        "grant_type": "authorization_code",
+    }
+    resp = requests.post(token_url, data=data)
+    if resp.status_code != 200:
+        return {"error": "Failed to get token", "details": resp.text}
+
+    tokens = resp.json()
+    # Store tokens locally (for demo, write to a file; in production, use a secure store)
+    with open("google_token.json", "w") as f:
+        json.dump(tokens, f)
+
+    # Optionally redirect to frontend or show a success message
+    return RedirectResponse(url="/success")
 
 # Add this block to run the app directly
 if __name__ == "__main__":
     uvicorn.run(
         "app:app", host="127.0.0.1", port=8000, reload=True
     )  # Add this block to run the app directly
+
+
+
