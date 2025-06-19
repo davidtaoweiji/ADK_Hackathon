@@ -253,7 +253,7 @@ const App: React.FC = () => {
   const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
   const [showAuthPrompt, setShowAuthPrompt] = useState<boolean>(true);
 
-  const GOOGLE_AUTH_URL = `https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=630391073901-nj714383nv367gkadb7jnojr12lm92c7.apps.googleusercontent.com&redirect_uri=http://localhost:8000/api/auth/callback/google&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcontacts+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgmail.readonly+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgmail.send&state=Jt81pmRr8D2ZxHTuoIBI08A5aaf4zu&prompt=consent&access_type=offline`;
+  const GOOGLE_AUTH_URL = `https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=630391073901-nj714383nv367gkadb7jnojr12lm92c7.apps.googleusercontent.com&redirect_uri=http://34.170.61.122&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcontacts+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgmail.readonly+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgmail.send&state=Jt81pmRr8D2ZxHTuoIBI08A5aaf4zu&prompt=consent&access_type=offline`;
 
   const speakText = useCallback((text: string) => {
     if (assistantVolume > 0 && 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window) {
@@ -311,7 +311,7 @@ const App: React.FC = () => {
 
   const ouath2callback = async () => {
     try {
-      const response = await fetch("${API_ENDPOINT}/oauth2callback");
+      const response = await fetch(`${API_ENDPOINT}/oauth2callback`);
       if (!response.ok) {
         throw new Error("Failed to call oath callback");
       }
