@@ -4,167 +4,167 @@ import { createRoot } from 'react-dom/client';
 
 // --- Web Speech API Type Definitions ---
 interface SpeechRecognitionEventMap {
-    "audiostart": Event;
-    "soundstart": Event;
-    "speechstart": Event;
-    "speechend": Event;
-    "soundend": Event;
-    "audioend": Event;
-    "result": SpeechRecognitionEvent;
-    "nomatch": SpeechRecognitionEvent;
-    "error": SpeechRecognitionErrorEvent;
-    "start": Event;
-    "end": Event;
+  "audiostart": Event;
+  "soundstart": Event;
+  "speechstart": Event;
+  "speechend": Event;
+  "soundend": Event;
+  "audioend": Event;
+  "result": SpeechRecognitionEvent;
+  "nomatch": SpeechRecognitionEvent;
+  "error": SpeechRecognitionErrorEvent;
+  "start": Event;
+  "end": Event;
 }
 
 interface SpeechRecognition extends EventTarget {
-    grammars: SpeechGrammarList;
-    lang: string;
-    continuous: boolean;
-    interimResults: boolean;
-    maxAlternatives: number;
-    serviceURI: string;
+  grammars: SpeechGrammarList;
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  maxAlternatives: number;
+  serviceURI: string;
 
-    start(): void;
-    stop(): void;
-    abort(): void;
+  start(): void;
+  stop(): void;
+  abort(): void;
 
-    onaudiostart: ((this: SpeechRecognition, ev: Event) => any) | null;
-    onsoundstart: ((this: SpeechRecognition, ev: Event) => any) | null;
-    onspeechstart: ((this: SpeechRecognition, ev: Event) => any) | null;
-    onspeechend: ((this: SpeechRecognition, ev: Event) => any) | null;
-    onsoundend: ((this: SpeechRecognition, ev: Event) => any) | null;
-    onaudioend: ((this: SpeechRecognition, ev: Event) => any) | null;
-    onresult: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => any) | null;
-    ennomatch: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => any) | null;
-    onerror: ((this: SpeechRecognition, ev: SpeechRecognitionErrorEvent) => any) | null;
-    onstart: ((this: SpeechRecognition, ev: Event) => any) | null;
-    onend: ((this: SpeechRecognition, ev: Event) => any) | null;
+  onaudiostart: ((this: SpeechRecognition, ev: Event) => any) | null;
+  onsoundstart: ((this: SpeechRecognition, ev: Event) => any) | null;
+  onspeechstart: ((this: SpeechRecognition, ev: Event) => any) | null;
+  onspeechend: ((this: SpeechRecognition, ev: Event) => any) | null;
+  onsoundend: ((this: SpeechRecognition, ev: Event) => any) | null;
+  onaudioend: ((this: SpeechRecognition, ev: Event) => any) | null;
+  onresult: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => any) | null;
+  ennomatch: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => any) | null;
+  onerror: ((this: SpeechRecognition, ev: SpeechRecognitionErrorEvent) => any) | null;
+  onstart: ((this: SpeechRecognition, ev: Event) => any) | null;
+  onend: ((this: SpeechRecognition, ev: Event) => any) | null;
 
-    addEventListener<K extends keyof SpeechRecognitionEventMap>(type: K, listener: (this: SpeechRecognition, ev: SpeechRecognitionEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-    addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-    removeEventListener<K extends keyof SpeechRecognitionEventMap>(type: K, listener: (this: SpeechRecognition, ev: SpeechRecognitionEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-    removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+  addEventListener<K extends keyof SpeechRecognitionEventMap>(type: K, listener: (this: SpeechRecognition, ev: SpeechRecognitionEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+  addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+  removeEventListener<K extends keyof SpeechRecognitionEventMap>(type: K, listener: (this: SpeechRecognition, ev: SpeechRecognitionEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+  removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
 }
 
 declare var SpeechRecognition: {
-    prototype: SpeechRecognition;
-    new(): SpeechRecognition;
+  prototype: SpeechRecognition;
+  new(): SpeechRecognition;
 };
 
 declare var webkitSpeechRecognition: { // For Safari/Chrome legacy
-    prototype: SpeechRecognition;
-    new(): SpeechRecognition;
+  prototype: SpeechRecognition;
+  new(): SpeechRecognition;
 };
 
 interface SpeechRecognitionEvent extends Event {
-    readonly resultIndex: number;
-    readonly results: SpeechRecognitionResultList;
-    readonly interpretation?: any;
-    readonly emma?: Document | null;
+  readonly resultIndex: number;
+  readonly results: SpeechRecognitionResultList;
+  readonly interpretation?: any;
+  readonly emma?: Document | null;
 }
 
 interface SpeechRecognitionResultList {
-    readonly length: number;
-    item(index: number): SpeechRecognitionResult;
-    [index: number]: SpeechRecognitionResult;
+  readonly length: number;
+  item(index: number): SpeechRecognitionResult;
+  [index: number]: SpeechRecognitionResult;
 }
 
 interface SpeechRecognitionResult {
-    readonly isFinal: boolean;
-    readonly length: number;
-    item(index: number): SpeechRecognitionAlternative;
-    [index: number]: SpeechRecognitionAlternative;
+  readonly isFinal: boolean;
+  readonly length: number;
+  item(index: number): SpeechRecognitionAlternative;
+  [index: number]: SpeechRecognitionAlternative;
 }
 
 interface SpeechRecognitionAlternative {
-    readonly transcript: string;
-    readonly confidence: number;
+  readonly transcript: string;
+  readonly confidence: number;
 }
 
 interface SpeechRecognitionErrorEvent extends Event {
-    readonly error: string;
-    readonly message: string;
+  readonly error: string;
+  readonly message: string;
 }
 
 interface SpeechGrammar {
-    src: string;
-    weight?: number;
+  src: string;
+  weight?: number;
 }
 declare var SpeechGrammar: {
-    prototype: SpeechGrammar;
-    new(): SpeechGrammar;
+  prototype: SpeechGrammar;
+  new(): SpeechGrammar;
 };
 
 interface SpeechGrammarList {
-    readonly length: number;
-    item(index: number): SpeechGrammar;
-    [index: number]: SpeechGrammar;
-    addFromString(string: string, weight?: number): void;
-    addFromURI(src: string, weight?: number): void;
+  readonly length: number;
+  item(index: number): SpeechGrammar;
+  [index: number]: SpeechGrammar;
+  addFromString(string: string, weight?: number): void;
+  addFromURI(src: string, weight?: number): void;
 }
 declare var SpeechGrammarList: {
-    prototype: SpeechGrammarList;
-    new(): SpeechGrammarList;
+  prototype: SpeechGrammarList;
+  new(): SpeechGrammarList;
 };
 
 // --- Speech Synthesis API Type Definitions ---
 interface SpeechSynthesisUtterance extends EventTarget {
-    text: string;
-    lang: string;
-    voice: SpeechSynthesisVoice | null;
-    volume: number; // 0 to 1
-    rate: number;   // 0.1 to 10
-    pitch: number;  // 0 to 2
-    onstart: ((this: SpeechSynthesisUtterance, ev: SpeechSynthesisEvent) => any) | null;
-    onend: ((this: SpeechSynthesisUtterance, ev: SpeechSynthesisEvent) => any) | null;
-    onerror: ((this: SpeechSynthesisUtterance, ev: SpeechSynthesisErrorEvent) => any) | null;
-    onpause: ((this: SpeechSynthesisUtterance, ev: SpeechSynthesisEvent) => any) | null;
-    onresume: ((this: SpeechSynthesisUtterance, ev: SpeechSynthesisEvent) => any) | null;
-    onmark: ((this: SpeechSynthesisUtterance, ev: SpeechSynthesisEvent) => any) | null;
-    onboundary: ((this: SpeechSynthesisUtterance, ev: SpeechSynthesisEvent) => any) | null;
+  text: string;
+  lang: string;
+  voice: SpeechSynthesisVoice | null;
+  volume: number; // 0 to 1
+  rate: number;   // 0.1 to 10
+  pitch: number;  // 0 to 2
+  onstart: ((this: SpeechSynthesisUtterance, ev: SpeechSynthesisEvent) => any) | null;
+  onend: ((this: SpeechSynthesisUtterance, ev: SpeechSynthesisEvent) => any) | null;
+  onerror: ((this: SpeechSynthesisUtterance, ev: SpeechSynthesisErrorEvent) => any) | null;
+  onpause: ((this: SpeechSynthesisUtterance, ev: SpeechSynthesisEvent) => any) | null;
+  onresume: ((this: SpeechSynthesisUtterance, ev: SpeechSynthesisEvent) => any) | null;
+  onmark: ((this: SpeechSynthesisUtterance, ev: SpeechSynthesisEvent) => any) | null;
+  onboundary: ((this: SpeechSynthesisUtterance, ev: SpeechSynthesisEvent) => any) | null;
 }
 declare var SpeechSynthesisUtterance: {
-    prototype: SpeechSynthesisUtterance;
-    new(text?: string): SpeechSynthesisUtterance;
+  prototype: SpeechSynthesisUtterance;
+  new(text?: string): SpeechSynthesisUtterance;
 };
 
 interface SpeechSynthesisVoice {
-    readonly voiceURI: string;
-    readonly name: string;
-    readonly lang: string;
-    readonly localService: boolean;
-    readonly default: boolean;
+  readonly voiceURI: string;
+  readonly name: string;
+  readonly lang: string;
+  readonly localService: boolean;
+  readonly default: boolean;
 }
 
 interface SpeechSynthesis extends EventTarget {
-    readonly pending: boolean;
-    readonly speaking: boolean;
-    readonly paused: boolean;
-    onvoiceschanged: ((this: SpeechSynthesis, ev: Event) => any) | null;
-    speak(utterance: SpeechSynthesisUtterance): void;
-    cancel(): void;
-    pause(): void;
-    resume(): void;
-    getVoices(): SpeechSynthesisVoice[];
+  readonly pending: boolean;
+  readonly speaking: boolean;
+  readonly paused: boolean;
+  onvoiceschanged: ((this: SpeechSynthesis, ev: Event) => any) | null;
+  speak(utterance: SpeechSynthesisUtterance): void;
+  cancel(): void;
+  pause(): void;
+  resume(): void;
+  getVoices(): SpeechSynthesisVoice[];
 }
 
 interface SpeechSynthesisEvent extends Event {
-    readonly charIndex: number;
-    readonly elapsedTime: number;
-    readonly name: string;
+  readonly charIndex: number;
+  readonly elapsedTime: number;
+  readonly name: string;
 }
 
 interface SpeechSynthesisErrorEvent extends Event {
-    readonly error: string;
+  readonly error: string;
 }
 
 declare global {
-    interface Window {
-        SpeechRecognition?: typeof SpeechRecognition;
-        webkitSpeechRecognition?: typeof SpeechRecognition;
-        SpeechSynthesisUtterance: typeof SpeechSynthesisUtterance;
-    }
+  interface Window {
+    SpeechRecognition?: typeof SpeechRecognition;
+    webkitSpeechRecognition?: typeof SpeechRecognition;
+    SpeechSynthesisUtterance: typeof SpeechSynthesisUtterance;
+  }
 }
 
 // --- App Code ---
@@ -230,14 +230,12 @@ interface WeatherInfo {
   };
 }
 
-const API_ENDPOINT = "http://34.170.61.122";
-
 const App: React.FC = () => {
   const [chatHistory, setChatHistory] = useState<Message[]>([]);
   const [userInput, setUserInput] = useState<string>('');
   const [isListening, setIsListening] = useState<boolean>(false);
   const [isBotThinking, setIsBotThinking] = useState<boolean>(false);
-  const [assistantVolume, setAssistantVolume] = useState<number>(0); 
+  const [assistantVolume, setAssistantVolume] = useState<number>(0);
 
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>(initialCalendarEvents);
   const [emailItems, setEmailItems] = useState<EmailItem[]>([]);
@@ -250,10 +248,10 @@ const App: React.FC = () => {
   const [weatherInfo, setWeatherInfo] = useState<WeatherInfo | null>(null);
   const [isWeatherLoading, setIsWeatherLoading] = useState<boolean>(false);
 
-  const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
   const [showAuthPrompt, setShowAuthPrompt] = useState<boolean>(true);
+  const [waitingForContinue, setWaitingForContinue] = useState(false);
 
-  const GOOGLE_AUTH_URL = `https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=630391073901-nj714383nv367gkadb7jnojr12lm92c7.apps.googleusercontent.com&redirect_uri=http://34.170.61.122&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcontacts+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgmail.readonly+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgmail.send&state=Jt81pmRr8D2ZxHTuoIBI08A5aaf4zu&prompt=consent&access_type=offline`;
+  const GOOGLE_AUTH_URL = `https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=630391073901-nj714383nv367gkadb7jnojr12lm92c7.apps.googleusercontent.com&redirect_uri=http://127.0.0.1:8000/oauth2callback&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcontacts+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgmail.readonly+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgmail.send&state=Jt81pmRr8D2ZxHTuoIBI08A5aaf4zu&prompt=consent&access_type=offline`;
 
   const speakText = useCallback((text: string) => {
     if (assistantVolume > 0 && 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window) {
@@ -262,7 +260,7 @@ const App: React.FC = () => {
       utterance.volume = assistantVolume;
       window.speechSynthesis.speak(utterance);
     } else if (assistantVolume === 0) {
-        console.log("Assistant audio is muted.");
+      console.log("Assistant audio is muted.");
     } else {
       console.warn('Text-to-Speech API not supported in this browser.');
     }
@@ -272,7 +270,7 @@ const App: React.FC = () => {
   const fetchCalendarEvents = async () => {
     setIsCalendarLoading(true);
     try {
-      const response = await fetch(`${API_ENDPOINT}/fetch_calendar_events`);
+      const response = await fetch("http://127.0.0.1:8000/fetch_calendar_events");
       const data = await response.json();
       if (data && Array.isArray(data.events)) {
         const newEvents: CalendarEvent[] = data.events.map((event: any, idx: number) => ({
@@ -291,39 +289,17 @@ const App: React.FC = () => {
     setIsCalendarLoading(false);
   };
 
-  useEffect(() => {
-    if (!isAuthorized){
-    }
-    else{
-      // ouath2callback();
-      setShowAuthPrompt(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (isAuthorized){
-      fetchCalendarEvents();
-      fetchWeather();
-      fetchInitialEmails();
-    }
+  const initialload = async () => {
+    fetchCalendarEvents();
+    fetchWeather();
+    fetchInitialEmails();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const ouath2callback = async () => {
-    try {
-      const response = await fetch(`${API_ENDPOINT}/oauth2callback`);
-      if (!response.ok) {
-        throw new Error("Failed to call oath callback");
-      }
-    } catch (error) {
-      console.error("Failed to call oath callback:", error);
-    }
   };
 
   const fetchWeather = async () => {
     setIsWeatherLoading(true);
     try {
-      const response = await fetch(`${API_ENDPOINT}/fetch_weather`);
+      const response = await fetch("http://127.0.0.1:8000/fetch_weather");
       const data = await response.json();
       setWeatherInfo(data.weather || null);
     } catch (error) {
@@ -332,11 +308,11 @@ const App: React.FC = () => {
     }
     setIsWeatherLoading(false);
   };
-   
+
   const fetchInitialEmails = async () => {
     setIsEmailLoading(true);
     try {
-      const response = await fetch(`${API_ENDPOINT}/fetch_latest_emails`);
+      const response = await fetch("http://127.0.0.1:8000/fetch_latest_emails");
       const data = await response.json();
       if (data && Array.isArray(data.emails)) {
         const newEmails: EmailItem[] = data.emails.map((email: any, idx: number) => ({
@@ -360,9 +336,9 @@ const App: React.FC = () => {
   useEffect(() => {
     const welcomeMessageText = `Hello! I'm your AI assistant. How can I help you today? You can toggle my audio response using the switch in the top-left corner.`;
     const initialBotMessage: Message = {
-        id: `bot-initial-${Date.now()}`,
-        text: welcomeMessageText,
-        sender: 'bot'
+      id: `bot-initial-${Date.now()}`,
+      text: welcomeMessageText,
+      sender: 'bot'
     };
     setChatHistory([initialBotMessage]);
     speakText("Hello! I'm your AI assistant. How can I help you today? You can toggle my audio response using the switch in the top-left corner.");
@@ -407,14 +383,14 @@ const App: React.FC = () => {
       console.warn('Speech Recognition API not supported in this browser.');
     }
     return () => {
-        if (speechRecognitionRef.current) {
-            speechRecognitionRef.current.onresult = null;
-            speechRecognitionRef.current.onerror = null;
-            speechRecognitionRef.current.onend = null;
-            if (isListening) {
-                 speechRecognitionRef.current.stop();
-            }
+      if (speechRecognitionRef.current) {
+        speechRecognitionRef.current.onresult = null;
+        speechRecognitionRef.current.onerror = null;
+        speechRecognitionRef.current.onend = null;
+        if (isListening) {
+          speechRecognitionRef.current.stop();
         }
+      }
     };
   }, [isListening]);
 
@@ -461,7 +437,7 @@ const App: React.FC = () => {
     if (!textToSend) return;
 
     if (isListening) {
-        stopListening();
+      stopListening();
     }
 
     const newUserMessage: Message = { id: `user-${Date.now()}`, text: textToSend, sender: 'user' };
@@ -471,16 +447,16 @@ const App: React.FC = () => {
 
     const loadingBotMessageId = `bot-loading-${Date.now()}`;
     const loadingBotMessage: Message = {
-        id: loadingBotMessageId,
-        text: 'Thinking',
-        sender: 'bot',
-        isLoading: true
+      id: loadingBotMessageId,
+      text: 'Thinking',
+      sender: 'bot',
+      isLoading: true
     };
     setChatHistory(prev => [...prev, loadingBotMessage]);
 
     // Simulate API call
     try {
-      const response = await fetch(`${API_ENDPOINT}/agent/ask`, {
+      const response = await fetch("http://127.0.0.1:8000/agent/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: textToSend }),
@@ -489,7 +465,7 @@ const App: React.FC = () => {
       const botResponseText = data.response;
 
       const newBotMessage: Message = { id: `bot-${Date.now()}`, text: botResponseText, sender: 'bot' };
-      setChatHistory(prev => prev.map(msg => msg.id === loadingBotMessageId ? newBotMessage : msg ));
+      setChatHistory(prev => prev.map(msg => msg.id === loadingBotMessageId ? newBotMessage : msg));
       speakText(botResponseText);
     } catch (error) {
       console.error("Error communicating with the assistant:", error);
@@ -509,32 +485,32 @@ const App: React.FC = () => {
   };
 
   const renderMessageContent = (message: Message) => {
-  if (message.isLoading && message.text === "Thinking") {
+    if (message.isLoading && message.text === "Thinking") {
+      return (
+        <>
+          {message.text}
+          <span className="loading-ellipsis">
+            <span>.</span><span>.</span><span>.</span>
+          </span>
+        </>
+      );
+    }
+    // Render HTML for bot messages (for the welcome message link)
+    if (message.sender === 'bot') {
+      return (
+        <span
+          style={{ whiteSpace: 'pre-line' }}
+          dangerouslySetInnerHTML={{ __html: message.text }}
+        />
+      );
+    }
+    // Preserve line breaks and whitespace from backend
     return (
-      <>
+      <span style={{ whiteSpace: 'pre-line' }}>
         {message.text}
-        <span className="loading-ellipsis">
-          <span>.</span><span>.</span><span>.</span>
-        </span>
-      </>
+      </span>
     );
-  }
-  // Render HTML for bot messages (for the welcome message link)
-  if (message.sender === 'bot') {
-    return (
-      <span
-        style={{ whiteSpace: 'pre-line' }}
-        dangerouslySetInnerHTML={{ __html: message.text }}
-      />
-    );
-  }
-  // Preserve line breaks and whitespace from backend
-  return (
-    <span style={{ whiteSpace: 'pre-line' }}>
-      {message.text}
-    </span>
-  );
-};
+  };
 
   const handleRefreshCalendar = () => {
     setIsCalendarLoading(true);
@@ -542,8 +518,8 @@ const App: React.FC = () => {
       fetchCalendarEvents();
     }
     catch (error) {
-        console.error("Failed to fetch emails:", error);
-        setCalendarEvents([]);
+      console.error("Failed to fetch emails:", error);
+      setCalendarEvents([]);
     }
     setIsCalendarLoading(false);
   };
@@ -551,23 +527,23 @@ const App: React.FC = () => {
   const handleRefreshEmail = async () => {
     setIsEmailLoading(true);
     try {
-        const response = await fetch(`${API_ENDPOINT}/fetch_latest_emails`);
-        const data = await response.json();
-        if (data && Array.isArray(data.emails)) {
-            // Map backend dicts to EmailItem type if needed
-            const newEmails: EmailItem[] = data.emails.map((email: any, idx: number) => ({
-                id: email.id || `mail-api-${idx}-${Date.now()}`,
-                sender: email.from || email.sender || "Unknown Sender",
-                subject: email.subject || "No Subject",
-                snippet: email.snippet || "",
-            }));
-            setEmailItems(newEmails);
-        } else {
-            setEmailItems([]);
-        }
-    } catch (error) {
-        console.error("Failed to fetch emails:", error);
+      const response = await fetch("http://127.0.0.1:8000/fetch_latest_emails");
+      const data = await response.json();
+      if (data && Array.isArray(data.emails)) {
+        // Map backend dicts to EmailItem type if needed
+        const newEmails: EmailItem[] = data.emails.map((email: any, idx: number) => ({
+          id: email.id || `mail-api-${idx}-${Date.now()}`,
+          sender: email.from || email.sender || "Unknown Sender",
+          subject: email.subject || "No Subject",
+          snippet: email.snippet || "",
+        }));
+        setEmailItems(newEmails);
+      } else {
         setEmailItems([]);
+      }
+    } catch (error) {
+      console.error("Failed to fetch emails:", error);
+      setEmailItems([]);
     }
     setIsEmailLoading(false);
   };
@@ -604,11 +580,11 @@ const App: React.FC = () => {
               gap: 16,
             }}
           >
-            <span style={{fontSize: '1.1em'}}>Please authorize with Google to access full service.</span>
+            <span style={{ fontSize: '1.1em' }}>Please authorize with Google to access full service</span>
             <button
               onClick={() => {
-                window.location.href = GOOGLE_AUTH_URL;
-                setIsAuthorized(true);
+                window.open(GOOGLE_AUTH_URL, "_blank", "noopener,noreferrer");
+                setWaitingForContinue(true);
               }}
               style={{
                 background: '#4285F4',
@@ -628,15 +604,38 @@ const App: React.FC = () => {
           </div>
         </>
       )}
+      {waitingForContinue && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(255,255,255,0.8)',
+            zIndex: 2000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '1.5em',
+            fontWeight: 600,
+            cursor: 'pointer'
+          }}
+          onClick={() => {
+            setShowAuthPrompt(false);
+            setWaitingForContinue(false);
+            initialload();
+          }}
+        >
+          Click anywhere to continue
+        </div>
+      )}
 
       {/* Main app content, blurred if not authorized */}
-      
-        <aside className="dashboard-panel" aria-label="Information Dashboard">
-        <div className="dashboard-content"  style={showAuthPrompt ? { filter: 'blur(4px)', pointerEvents: 'none', userSelect: 'none' } : {}}>
-            <div className="dashboard-column">
-                <div className="widget fixed-height" role="region" aria-labelledby="weather-widget-heading">
-                    <h3 id="weather-widget-heading"><span className="widget-icon" aria-hidden="true">☀️</span>Weather</h3>
-                    {isWeatherLoading ? (
+
+      <aside className="dashboard-panel" aria-label="Information Dashboard">
+        <div className="dashboard-content" style={showAuthPrompt ? { filter: 'blur(4px)', pointerEvents: 'none', userSelect: 'none' } : {}}>
+          <div className="dashboard-column">
+            <div className="widget fixed-height" role="region" aria-labelledby="weather-widget-heading">
+              <h3 id="weather-widget-heading"><span className="widget-icon" aria-hidden="true">☀️</span>Weather</h3>
+              {isWeatherLoading ? (
                 <p>Loading weather...</p>
               ) : weatherInfo ? (
                 <div>
@@ -673,101 +672,101 @@ const App: React.FC = () => {
               ) : (
                 <p>Weather information is unavailable.</p>
               )}
-                </div>
-                <div className="widget grow-widget" role="region" aria-labelledby="calendar-list-heading">
-                    <div className="widget-header">
-                        <h3 id="calendar-list-heading"><span className="widget-icon" aria-hidden="true">🗓️</span>Calendar Events</h3>
-                        <button 
-                            className="widget-refresh-button" 
-                            onClick={handleRefreshCalendar} 
-                            disabled={isCalendarLoading}
-                            aria-label="Refresh calendar events"
-                            title="Refresh calendar events"
-                        >
-                            <svg className={isCalendarLoading ? 'spinning' : ''} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18px" height="18px">
-                                <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
-                            </svg>
-                        </button>
-                    </div>
-                    <p className="calendar-list-description">Your upcoming schedule. Scroll to see more.</p>
-                    <div className="list-content-wrapper" aria-label="List of calendar events">
-                      {calendarEvents.length === 0 && !isCalendarLoading ? (
-                          <div className="calendar-event-item" style={{ color: 'var(--secondary-text-color)' }}>
-                              You are all clear today!
-                          </div>
-                      ) : (
-                          calendarEvents.map(event => (
-                              <div key={event.id} className="calendar-event-item">
-                                  <strong>{event.time}</strong> - {event.title}
-                              </div>
-                          ))
-                      )}
-                      {isCalendarLoading && <div className="widget-loading-text">Loading events...</div>}
+            </div>
+            <div className="widget grow-widget" role="region" aria-labelledby="calendar-list-heading">
+              <div className="widget-header">
+                <h3 id="calendar-list-heading"><span className="widget-icon" aria-hidden="true">🗓️</span>Calendar Events</h3>
+                <button
+                  className="widget-refresh-button"
+                  onClick={handleRefreshCalendar}
+                  disabled={isCalendarLoading}
+                  aria-label="Refresh calendar events"
+                  title="Refresh calendar events"
+                >
+                  <svg className={isCalendarLoading ? 'spinning' : ''} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18px" height="18px">
+                    <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" />
+                  </svg>
+                </button>
+              </div>
+              <p className="calendar-list-description">Your upcoming schedule. Scroll to see more.</p>
+              <div className="list-content-wrapper" aria-label="List of calendar events">
+                {calendarEvents.length === 0 && !isCalendarLoading ? (
+                  <div className="calendar-event-item" style={{ color: 'var(--secondary-text-color)' }}>
+                    You are all clear today!
                   </div>
-                </div>
-            </div>
-            <div className="dashboard-column">
-                <div className="widget grow-widget" role="region" aria-labelledby="email-list-heading">
-                     <div className="widget-header">
-                        <h3 id="email-list-heading"><span className="widget-icon" aria-hidden="true">✉️</span>Email List</h3>
-                        <button 
-                            className="widget-refresh-button" 
-                            onClick={handleRefreshEmail} 
-                            disabled={isEmailLoading}
-                            aria-label="Refresh email list"
-                            title="Refresh email list"
-                        >
-                             <svg className={isEmailLoading ? 'spinning' : ''} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18px" height="18px">
-                                <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
-                            </svg>
-                        </button>
+                ) : (
+                  calendarEvents.map(event => (
+                    <div key={event.id} className="calendar-event-item">
+                      <strong>{event.time}</strong> - {event.title}
                     </div>
-                    <p className="email-list-description">Recent messages from your inbox. Scroll for more.</p>
-                    <div className="list-content-wrapper" aria-label="List of emails">
-                        {emailItems.map(email => (
-                            <div key={email.id} className="email-item">
-                                <strong>{email.sender}</strong> - {email.subject}
-                                <p style={{fontSize: '0.8em', color: 'var(--secondary-text-color)', margin: '4px 0 0'}}>{email.snippet}</p>
-                            </div>
-                        ))}
-                        {isEmailLoading && <div className="widget-loading-text">Loading emails...</div>}
-                    </div>
-                </div>
+                  ))
+                )}
+                {isCalendarLoading && <div className="widget-loading-text">Loading events...</div>}
+              </div>
             </div>
+          </div>
+          <div className="dashboard-column">
+            <div className="widget grow-widget" role="region" aria-labelledby="email-list-heading">
+              <div className="widget-header">
+                <h3 id="email-list-heading"><span className="widget-icon" aria-hidden="true">✉️</span>Email List</h3>
+                <button
+                  className="widget-refresh-button"
+                  onClick={handleRefreshEmail}
+                  disabled={isEmailLoading}
+                  aria-label="Refresh email list"
+                  title="Refresh email list"
+                >
+                  <svg className={isEmailLoading ? 'spinning' : ''} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18px" height="18px">
+                    <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" />
+                  </svg>
+                </button>
+              </div>
+              <p className="email-list-description">Recent messages from your inbox. Scroll for more.</p>
+              <div className="list-content-wrapper" aria-label="List of emails">
+                {emailItems.map(email => (
+                  <div key={email.id} className="email-item">
+                    <strong>{email.sender}</strong> - {email.subject}
+                    <p style={{ fontSize: '0.8em', color: 'var(--secondary-text-color)', margin: '4px 0 0' }}>{email.snippet}</p>
+                  </div>
+                ))}
+                {isEmailLoading && <div className="widget-loading-text">Loading emails...</div>}
+              </div>
+            </div>
+          </div>
         </div>
       </aside>
       <section className="chat-panel" aria-label="Chat Panel">
         <div className="chat-panel-header">
-            <button
-                onClick={toggleAssistantAudio}
-                className={`audio-toggle-switch ${assistantVolume > 0 ? 'on' : 'off'}`}
-                aria-pressed={assistantVolume > 0}
-                aria-label={assistantVolume > 0 ? "Mute assistant audio" : "Unmute assistant audio"}
-                title={assistantVolume > 0 ? "Mute assistant audio" : "Unmute assistant audio"}
-            >
-                <span className="audio-toggle-label">Assistant Audio:</span>
-                <span className="audio-toggle-icon" aria-hidden="true">
-                    {assistantVolume > 0 ? (
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18px" height="18px">
-                          <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
-                        </svg>
-                    ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18px" height="18px">
-                          <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L7 9H3v6h4l5 5V4z"/>
-                        </svg>
-                    )}
-                </span>
-                <div className="switch-track">
-                    <div className="switch-knob"></div>
-                </div>
-            </button>
+          <button
+            onClick={toggleAssistantAudio}
+            className={`audio-toggle-switch ${assistantVolume > 0 ? 'on' : 'off'}`}
+            aria-pressed={assistantVolume > 0}
+            aria-label={assistantVolume > 0 ? "Mute assistant audio" : "Unmute assistant audio"}
+            title={assistantVolume > 0 ? "Mute assistant audio" : "Unmute assistant audio"}
+          >
+            <span className="audio-toggle-label">Assistant Audio:</span>
+            <span className="audio-toggle-icon" aria-hidden="true">
+              {assistantVolume > 0 ? (
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18px" height="18px">
+                  <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18px" height="18px">
+                  <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L7 9H3v6h4l5 5V4z" />
+                </svg>
+              )}
+            </span>
+            <div className="switch-track">
+              <div className="switch-knob"></div>
+            </div>
+          </button>
         </div>
         <div className="chat-history" ref={chatHistoryRef} aria-live="polite">
           {chatHistory.map((msg) => (
             <div
               key={msg.id}
               className={`chat-message ${msg.sender === 'user' ? 'user-message' : 'bot-message'} ${msg.isLoading ? 'loading' : ''}`}
-              aria-label={`${msg.sender === 'user' ? 'User' : 'Bot'} message: ${msg.isLoading ? msg.text + ' loading' : msg.text }`}
+              aria-label={`${msg.sender === 'user' ? 'User' : 'Bot'} message: ${msg.isLoading ? msg.text + ' loading' : msg.text}`}
             >
               {renderMessageContent(msg)}
             </div>
@@ -783,7 +782,7 @@ const App: React.FC = () => {
             disabled={!speechRecognitionRef.current || isBotThinking}
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.91-3c-.49 0-.9.36-.98.85C16.52 14.24 14.47 16 12 16s-4.52-1.76-4.93-4.15c-.08-.49-.49-.85-.98-.85-.55 0-1 .45-1 1 0 2.73 2.04 4.98 4.75 5.42V21H9.75c-.41 0-.75.34-.75.75s.34.75.75.75h4.5c.41 0 .75-.34.75-.75s-.34-.75-.75-.75H13v-1.58c2.71-.44 4.75-2.69 4.75-5.42 0-.55-.45-1-1-1z"/>
+              <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.91-3c-.49 0-.9.36-.98.85C16.52 14.24 14.47 16 12 16s-4.52-1.76-4.93-4.15c-.08-.49-.49-.85-.98-.85-.55 0-1 .45-1 1 0 2.73 2.04 4.98 4.75 5.42V21H9.75c-.41 0-.75.34-.75.75s.34.75.75.75h4.5c.41 0 .75-.34.75-.75s-.34-.75-.75-.75H13v-1.58c2.71-.44 4.75-2.69 4.75-5.42 0-.55-.45-1-1-1z" />
             </svg>
           </button>
           <input
@@ -798,12 +797,12 @@ const App: React.FC = () => {
           <button
             onClick={() => handleSendMessage()}
             className="send-button"
-            disabled={!userInput.trim() || isBotThinking }
+            disabled={!userInput.trim() || isBotThinking}
             aria-label="Send message"
             title="Send message"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24px" height="24px">
-              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
             </svg>
           </button>
         </div>

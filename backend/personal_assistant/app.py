@@ -16,6 +16,8 @@ from datetime import datetime, timedelta
 import requests
 import json
 import os
+from google_auth_oauthlib.flow import InstalledAppFlow
+from fastapi import Body
 
 load_dotenv()
 
@@ -144,31 +146,33 @@ async def send_message_endpoint(user_id: int, message: MessageRequest):
 
 @app.get("/oauth2callback")
 def oauth2callback(request: Request, code: str = None, error: str = None):
-    if error:
-        return {"error": error}
     if not code:
         return {"error": "No code provided"}
 
-    # Exchange code for tokens
-    token_url = "https://oauth2.googleapis.com/token"
-    data = {
-        "code": code,
-        "client_id": os.getenv("GOOGLE_CLIENT_ID"),
-        "client_secret": os.getenv("GOOGLE_CLIENT_SECRET"),
-        "redirect_uri": os.getenv("GOOGLE_REDIRECT_URI"),
-        "grant_type": "authorization_code",
+    flow = InstalledAppFlow.from_client_secrets_file("credentials.json", [
+    "https://www.googleapis.com/auth/calendar",
+    "https://www.googleapis.com/auth/contacts",
+    "https://www.googleapis.com/auth/gmail.readonly",
+    "https://www.googleapis.com/auth/gmail.send",
+    ])
+    flow.redirect_uri = "http://127.0.0.1:8000/oauth2callback"
+    try:
+        flow.fetch_token(code=code)
+    except Exception as e:
+        return {"error": "Failed to fetch token", "details": str(e)}
+
+    credentials = flow.credentials
+    # Store credentials (for demo, write to a file; in production, use a secure store)
+    creds_dict = {
+        "token": credentials.token,
+        "refresh_token": credentials.refresh_token,
+        "token_uri": credentials.token_uri,
+        "client_id": credentials.client_id,
+        "client_secret": credentials.client_secret,
+        "scopes": credentials.scopes,
     }
-    resp = requests.post(token_url, data=data)
-    if resp.status_code != 200:
-        return {"error": "Failed to get token", "details": resp.text}
-
-    tokens = resp.json()
-    # Store tokens locally (for demo, write to a file; in production, use a secure store)
     with open("token.json", "w") as f:
-        json.dump(tokens, f)
-
-    # Optionally redirect to frontend or show a success message
-    return RedirectResponse(url="/success")
+        json.dump(creds_dict, f)
 
 # Add this block to run the app directly
 if __name__ == "__main__":
