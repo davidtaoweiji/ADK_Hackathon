@@ -230,6 +230,8 @@ interface WeatherInfo {
   };
 }
 
+const API_ENDPOINT = "http://34.170.61.122";
+
 const App: React.FC = () => {
   const [chatHistory, setChatHistory] = useState<Message[]>([]);
   const [userInput, setUserInput] = useState<string>('');
@@ -265,7 +267,7 @@ const App: React.FC = () => {
   const fetchCalendarEvents = async () => {
     setIsCalendarLoading(true);
     try {
-      const response = await fetch("http://127.0.0.1:8000/fetch_calendar_events");
+      const response = await fetch(`${API_ENDPOINT}/fetch_calendar_events`);
       const data = await response.json();
       if (data && Array.isArray(data.events)) {
         const newEvents: CalendarEvent[] = data.events.map((event: any, idx: number) => ({
@@ -293,7 +295,7 @@ const App: React.FC = () => {
     const fetchWeather = async () => {
       setIsWeatherLoading(true);
       try {
-        const response = await fetch("http://127.0.0.1:8000/fetch_weather");
+        const response = await fetch(`${API_ENDPOINT}/fetch_weather`);
         const data = await response.json();
         setWeatherInfo(data.weather || null);
       } catch (error) {
@@ -309,7 +311,7 @@ const App: React.FC = () => {
     const fetchInitialEmails = async () => {
       setIsEmailLoading(true);
       try {
-        const response = await fetch("http://127.0.0.1:8000/fetch_latest_emails");
+        const response = await fetch(`${API_ENDPOINT}/fetch_latest_emails`);
         const data = await response.json();
         if (data && Array.isArray(data.emails)) {
           const newEmails: EmailItem[] = data.emails.map((email: any, idx: number) => ({
@@ -456,7 +458,7 @@ const App: React.FC = () => {
 
     // Simulate API call
     try {
-      const response = await fetch("http://127.0.0.1:8000/agent/ask", {
+      const response = await fetch(`${API_ENDPOINT}/agent/ask`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: textToSend }),
@@ -518,7 +520,7 @@ const App: React.FC = () => {
   const handleRefreshEmail = async () => {
     setIsEmailLoading(true);
     try {
-        const response = await fetch("http://127.0.0.1:8000/fetch_latest_emails");
+        const response = await fetch(`${API_ENDPOINT}/fetch_latest_emails`);
         const data = await response.json();
         if (data && Array.isArray(data.emails)) {
             // Map backend dicts to EmailItem type if needed
