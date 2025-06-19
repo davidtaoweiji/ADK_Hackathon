@@ -164,7 +164,7 @@ def oauth2callback(request: Request, code: str = None, error: str = None):
 
     tokens = resp.json()
     # Store tokens locally (for demo, write to a file; in production, use a secure store)
-    with open("google_token.json", "w") as f:
+    with open("token.json", "w") as f:
         json.dump(tokens, f)
 
     # Optionally redirect to frontend or show a success message
