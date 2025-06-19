@@ -174,6 +174,10 @@ def oauth2callback(request: Request, code: str = None, error: str = None):
     with open("token.json", "w") as f:
         json.dump(creds_dict, f)
 
+    return {
+        "message": "Authorization complete. You can safely close this page and return to the app."
+    }
+
 # Add this block to run the app directly
 if __name__ == "__main__":
     uvicorn.run(
